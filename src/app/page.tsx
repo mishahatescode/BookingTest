@@ -1,3 +1,7 @@
+// app/page.tsx or pages/index.tsx
+
+'use client';
+
 import axios from 'axios';
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
@@ -58,7 +62,6 @@ const Home: React.FC = () => {
       }
     }
   };
-
 
 
   return (
