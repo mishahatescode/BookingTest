@@ -21,7 +21,12 @@ const Home: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string>('');
   const [selectedLocation, setSelectedLocation] = useState<{ lat: number | null; lng: number | null }>({ lat: null, lng: null });
-  const [formData, setFormData] = useState<{ name: string; email: string; notes: string }>({ name: '', email: '', notes: '' });
+  const [formData, setFormData] = useState<{ name: string; email: string; notes: string; phone: string }>({
+    name: '',
+    email: '',
+    notes: '',
+    phone: '' // Added phone field here
+  });
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
