@@ -1,16 +1,8 @@
-// app/page.tsx or pages/index.tsx
-
 'use client';
 
 import axios from 'axios';
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
-
-// Define the expected response data structure
-interface ApiResponse {
-  message: string;
-  error?: string; // Optional if the response may include an error
-}
 
 // Import your components
 import Calendar from '../../components/Calendar';
@@ -34,16 +26,21 @@ const Home: React.FC = () => {
       return;
     }
 
-    const data = {
-      date: selectedDate.toISOString().split('T')[0],
-      time: selectedTime,
-      latitude: selectedLocation.lat,
-      longitude: selectedLocation.lng,
-      ...formData,
+    const bookingData = {
+      eventTypeId: 12345, // Replace with the correct event type ID
+      start: `${selectedDate.toISOString().split('T')[0]}T${selectedTime}:00.000Z`, // Start time in ISO 8601 format
+      name: formData.name,
+      email: formData.email,
+      notes: formData.notes,
+      timeZone: "Europe/London", // Change based on the user's timezone
+      location: {
+        value: "inPerson", // You can change this based on how the location is selected
+        optionValue: "" // Optional
+      }
     };
 
     try {
-      const response = await axios.post<ApiResponse>('/api/submit-form', data, {
+      const response = await axios.post('/api/booking-proxy', bookingData, {
         headers: { 'Content-Type': 'application/json' },
       });
 
@@ -59,7 +56,6 @@ const Home: React.FC = () => {
         alert('Error: ' + result.error);
       }
     } catch (error: any) {
-      // Manually check if the error is an Axios error by checking for the response property
       if (error.response) {
         console.error('Axios error response:', error.response?.data || error.message);
         alert('Axios error: ' + (error.response?.data?.message || error.message));
@@ -69,7 +65,6 @@ const Home: React.FC = () => {
       }
     }
   };
-
 
   return (
     <div className="container">
