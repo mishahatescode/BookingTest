@@ -1,11 +1,6 @@
-// app/page.tsx or pages/index.tsx
-
-'use client';
-
+import axios from 'axios';
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
-import axios from 'axios';
-import type { AxiosError } from 'axios'; // Import AxiosError type correctly
 
 // Import your components
 import Calendar from '../../components/Calendar';
@@ -14,75 +9,55 @@ import TimeSlots from '../../components/TimeSlots';
 // Dynamically import the Map component with SSR disabled
 const MapWithNoSSR = dynamic(() => import('../../components/Map'), { ssr: false });
 
-
-
 const Home: React.FC = () => {
-  // State variables
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string>('');
   const [selectedLocation, setSelectedLocation] = useState<{ lat: number | null; lng: number | null }>({ lat: null, lng: null });
   const [formData, setFormData] = useState<{ name: string; email: string; notes: string }>({ name: '', email: '', notes: '' });
 
-  // Replace with your Cal.com Event Type ID and API key
-  const eventTypeId = '1044017'; // Replace with your actual eventTypeId
-  const apiKey = process.env.NEXT_PUBLIC_CALCOM_API_KEY;
+  // Handle form submission
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
+    if (!selectedDate || !selectedTime || !selectedLocation.lat || !selectedLocation.lng) {
+      alert('Please select a date, time, and location.');
+      return;
+    }
 
-
-const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
-
-  if (!selectedDate || !selectedTime || !selectedLocation.lat || !selectedLocation.lng) {
-    alert('Please select a date, time, and location.');
-    return;
-  }
-
-  const bookingData = {
-    eventTypeId,
-    startTime: `${selectedDate.toISOString().split('T')[0]}T${selectedTime}:00Z`,
-    endTime: `${selectedDate.toISOString().split('T')[0]}T${parseInt(selectedTime) + 1}:00Z`,
-    location: {
+    const data = {
+      date: selectedDate.toISOString().split('T')[0],
+      time: selectedTime,
       latitude: selectedLocation.lat,
       longitude: selectedLocation.lng,
-    },
-    invitee: {
-      name: formData.name,
-      email: formData.email,
-    },
-    notes: formData.notes,
+      ...formData,
+    };
+
+    try {
+      const response = await axios.post('/api/submit-form', data, {
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      const result = await response.data;
+
+      if (response.status === 200) {
+        alert(result.message);
+        setSelectedDate(null);
+        setSelectedTime('');
+        setSelectedLocation({ lat: null, lng: null });
+        setFormData({ name: '', email: '', notes: '' });
+      } else {
+        alert('Error: ' + result.error);
+      }
+    } catch (error: any) {
+      if (axios.isAxiosError(error)) {
+        console.error('Axios error response:', error.response?.data || error.message);
+        alert('Axios error: ' + (error.response?.data?.message || error.message));
+      } else {
+        console.error('Error:', error.message);
+        alert('An error occurred while submitting the form.');
+      }
+    }
   };
-
-  try {
-    const response = await axios.post('/api/booking-proxy', bookingData, {
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (response.status === 200) {
-      alert('Booking confirmed!');
-      setSelectedDate(null);
-      setSelectedTime('');
-      setSelectedLocation({ lat: null, lng: null });
-      setFormData({ name: '', email: '', notes: '' });
-    } else {
-      alert('Error: ' + response.data.error);
-    }
-  } catch (error) {
-    // Check if the error is an instance of AxiosError
-    if (error instanceof AxiosError) {
-      console.error('Axios error response:', error.response?.data || error.message);
-      alert('Axios error: ' + (error.response?.data?.message || error.message));
-    } else if (error instanceof Error) {
-      console.error('Error creating booking:', error.message);
-      alert('An error occurred: ' + error.message);
-    } else {
-      console.error('Unexpected error:', error);
-      alert('An unexpected error occurred.');
-    }
-  }
-};
 
 
 
