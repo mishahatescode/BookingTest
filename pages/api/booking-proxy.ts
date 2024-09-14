@@ -32,9 +32,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         smsReminderNumber: null // Add phone number if needed for SMS reminders
       };
 
-      const calcomResponse = await axios.post('https://api.cal.com/v1/bookings', bookingData, {
+      const calcomResponse = await axios.post('https://api.cal.com/v2/bookings', bookingData, {
         headers: {
-          Authorization: `Bearer cal_live_04d45510f577a23f98ba59b9b20c03fe`, // Use environment variable for API key
+          Authorization: `Bearer ${process.env.CALCOM_API_KEY}`, // Use environment variable for API key
           'Content-Type': 'application/json',
         },
       });
