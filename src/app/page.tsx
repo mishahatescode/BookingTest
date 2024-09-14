@@ -74,9 +74,15 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       alert('Error: ' + response.data.error);
     }
   } catch (error) {
-    console.error('Error creating booking:', error.response?.data || error.message); // Log detailed error
-    alert('An error occurred while submitting the form.');
+      if (error instanceof Error) {
+        console.error('Error creating booking:', error.message);
+        alert('An error occurred: ' + error.message);
+      } else {
+        console.error('Unexpected error:', error);
+        alert('An unexpected error occurred.');
   }
+}
+
 };
 
 
