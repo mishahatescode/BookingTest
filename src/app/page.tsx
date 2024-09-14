@@ -63,10 +63,8 @@ const Home: React.FC = () => {
       if (error.response) {
         console.error('Axios error response:', error.response?.data || error.message);
         alert('Axios error: ' + (error.response?.data?.message || error.message));
-        console.log('Request method:', req.method);
       } else {
         console.error('Error:', error.message);
-        console.log('Request method:', req.method);
         alert('An error occurred while submitting the form.');
       }
     }
