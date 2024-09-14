@@ -4,7 +4,8 @@
 
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
+import type { AxiosError } from 'axios'; // Import AxiosError type correctly
 
 // Import your components
 import Calendar from '../../components/Calendar';
