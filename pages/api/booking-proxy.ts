@@ -60,7 +60,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       const response = await axios.post('https://api.cal.com/v1/bookings', req.body, {
         headers: {
-          Authorization: `Bearer ${process.env.CALCOM_API_KEY}`, // Ensure the API key is set correctly
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_CALCOM_API_KEY}`, // Ensure the API key is set correctly
           'Content-Type': 'application/json',
         },
       });
