@@ -24,7 +24,7 @@ const Home: React.FC = () => {
 
   // Replace with your Cal.com Event Type ID and API key
   const eventTypeId = '1044017'; // Replace with your actual eventTypeId
-  const apiKey = process.env.CALCOM_API_KEY;
+  const apiKey = process.env.NEXT_PUBLIC_CALCOM_API_KEY;
 
 
 
@@ -54,7 +54,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   try {
     const response = await axios.post('/api/booking-proxy', bookingData, {
       headers: {
-        Authorization: `Bearer ${process.env.CALCOM_API_KEY}`,
+        Authorization: `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
     });
