@@ -52,11 +52,15 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   };
 
   try {
-    const response = await axios.post('/api/booking-proxy', bookingData);
+    const response = await axios.post('/api/booking-proxy', bookingData, {
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+    });
 
     if (response.status === 200) {
       alert('Booking confirmed!');
-      // Reset form and state
       setSelectedDate(null);
       setSelectedTime('');
       setSelectedLocation({ lat: null, lng: null });
@@ -64,7 +68,8 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     } else {
       alert('Error: ' + response.data.error);
     }
-  } // Check if the error is an instance of AxiosError
+  } catch (error) {
+    // Check if the error is an instance of AxiosError
     if (error instanceof AxiosError) {
       console.error('Axios error response:', error.response?.data || error.message);
       alert('Axios error: ' + (error.response?.data?.message || error.message));
@@ -77,7 +82,6 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     }
   }
 };
-
 
 
 
