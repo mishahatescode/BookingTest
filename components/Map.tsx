@@ -5,8 +5,6 @@ import React, { useEffect } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css'; // Import Leaflet CSS
 
-
-
 interface MapProps {
   selectedLocation: { lat: number | null; lng: number | null };
   setSelectedLocation: (location: { lat: number; lng: number }) => void;
@@ -70,7 +68,7 @@ const Map: React.FC<MapProps> = ({ selectedLocation, setSelectedLocation }) => {
     }
   }, [setSelectedLocation]);
 
-  return <div id="map" style={{ height: '400px', marginBottom: '20px' }}></div>;
+  return <div id="map" className="map-container"></div>;
 };
 
 export default Map;

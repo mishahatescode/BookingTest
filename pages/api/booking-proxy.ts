@@ -25,6 +25,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           phone: phone,
         },
         timeZone: timeZone,
+        language: "en",  // Added the required language field as a string
         location: location,
         metadata: metadata || {},
         status: status || 'PENDING'
@@ -32,7 +33,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       const calcomResponse = await axios.post('https://api.cal.com/v2/bookings', bookingData, {
         headers: {
-          Authorization: `Bearer ${process.env.CALCOM_API_KEY}`,
+          Authorization: `Bearer cal_live_af2036ceabdcf7ba81a28d3b57633130`,
           'Content-Type': 'application/json',
         },
       });
@@ -43,12 +44,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
 
     } catch (error: any) {
-      console.error('Error creating booking:', error.response?.data || error.message);
-      res.status(error.response?.status || 500).json({
-        status: 'error',
-        message: error.response?.data?.message || 'An error occurred while creating the booking',
-        details: error.response?.data || {},
-      });
+      if (error.response) {
+        // Log full error response to understand its structure
+        console.error('Full error response:', JSON.stringify(error.response.data, null, 2));
+
+        // Log specific error details if available
+        const errorDetails = error.response.data?.details?.errors || 'No error details available';
+
+        console.error('Error creating booking:', errorDetails);
+
+        // Respond with detailed error info
+        res.status(error.response.status).json({
+          status: 'error',
+          message: error.response.data.message,
+          details: errorDetails,
+        });
+      } else {
+        console.error('Error:', error.message);
+        res.status(500).json({ status: 'error', message: 'Internal Server Error' });
+      }
     }
   } else {
     res.setHeader('Allow', ['POST']);

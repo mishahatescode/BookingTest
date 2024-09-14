@@ -3,6 +3,8 @@
 import axios from 'axios';
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
+import Calendar from '../../components/Calendar';
+import TimeSlots from '../../components/TimeSlots';
 
 // Define the expected response structure from the API
 interface ApiResponse {
@@ -10,22 +12,19 @@ interface ApiResponse {
   error?: string;
 }
 
-// Import your components
-import Calendar from '../../components/Calendar';
-import TimeSlots from '../../components/TimeSlots';
-
 // Dynamically import the Map component with SSR disabled
 const MapWithNoSSR = dynamic(() => import('../../components/Map'), { ssr: false });
 
 const Home: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string>('');
+  const [showTimeSlots, setShowTimeSlots] = useState(false); // Manage Calendar/TimeSlots view
   const [selectedLocation, setSelectedLocation] = useState<{ lat: number | null; lng: number | null }>({ lat: null, lng: null });
   const [formData, setFormData] = useState<{ name: string; email: string; notes: string; phone: string }>({
     name: '',
     email: '',
     notes: '',
-    phone: '' // Added phone field here
+    phone: '' 
   });
 
   // Handle form submission
@@ -42,7 +41,7 @@ const Home: React.FC = () => {
       start: `${selectedDate.toISOString().split('T')[0]}T${selectedTime}:00.000Z`,  // Combine date and time
       name: 'CustomBooking',  // Placeholder name for tracking
       email: 'custom@booking.com',  // Placeholder email for tracking
-      phone: phone,
+      phone: formData.phone,  // Correctly accessing phone from formData
       timeZone: "Asia/Makassar",  // Denpasar timezone
       location: `Lat: ${selectedLocation.lat}, Lng: ${selectedLocation.lng}`,  // Add location
       metadata: {},  // Default metadata
@@ -57,11 +56,11 @@ const Home: React.FC = () => {
       const result = response.data;
 
       if (response.status === 200) {
-        alert(result.message); // Correctly typed 'result'
+        alert(result.message); 
         setSelectedDate(null);
         setSelectedTime('');
         setSelectedLocation({ lat: null, lng: null });
-        setFormData({ name: '', email: '', notes: '' });
+        setFormData({ name: '', email: '', notes: '', phone: '' }); 
       } else {
         alert('Error: ' + result.error);
       }
@@ -78,63 +77,52 @@ const Home: React.FC = () => {
 
   return (
     <div className="container">
-      <div className="flex">
-        {/* Calendar Component */}
-        <Calendar selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
+      <div className="service-details">
+        {/* Add service details here, if needed */}
+        <div className="service-info">
+          <h2>GoWash Bali</h2>
+          <h3>Pickup & Wash - 100.000 Rp</h3>
+          <p><i className="icon-calendar"></i> Sunday, September 15, 2024</p>
+          <p><i className="icon-clock"></i> 1h</p>
+          <p><i className="icon-location"></i> Custom attendee location</p>
+          <p><i className="icon-globe"></i> Asia/Makassar</p>
+        </div>
+      </div>
 
-        {/* TimeSlots Component */}
-        {selectedDate && (
-          <TimeSlots selectedTime={selectedTime} setSelectedTime={setSelectedTime} />
-        )}
-
-        {/* Map Component */}
+      {/* Middle Column - Map Component */}
+      <div className="map-column">
         <MapWithNoSSR selectedLocation={selectedLocation} setSelectedLocation={setSelectedLocation} />
+      </div>
 
-        {/* Booking Form */}
+      {/* Right Column - Booking Form */}
+      <div className="form-container">
         <form className="booking-form" onSubmit={handleSubmit}>
           <h2>Confirm Your Booking</h2>
-
-          {/* Display Selected Date, Time, and Location */}
-          <div className="booking-details">
-            <p>
-              <strong>Date:</strong> {selectedDate ? selectedDate.toDateString() : 'Not selected'}
-            </p>
-            <p>
-              <strong>Time:</strong> {selectedTime || 'Not selected'}
-            </p>
-            <p>
-              <strong>Location:</strong>{' '}
-              {selectedLocation.lat && selectedLocation.lng
-                ? `Lat: ${selectedLocation.lat}, Lng: ${selectedLocation.lng}`
-                : 'Not selected'}
-            </p>
-          </div>
-
-          {/* Form Fields */}
-          {/*<label htmlFor="name">Name</label>
-          <input
-            type="text"
-            id="name"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            required
-          />*/}
-
-          {/*<label htmlFor="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            value={formData.email}
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-            required
-          />*/}
-
+          <div className="container">
+               <div className="flex">
+                 {/* Conditionally render Calendar or TimeSlots */}
+                 {!showTimeSlots ? (
+                   <Calendar
+                   selectedDate={selectedDate}
+                   setSelectedDate={setSelectedDate}
+                   setShowTimeSlots={setShowTimeSlots}
+                   />
+                   ) : (
+                   <TimeSlots
+                   selectedTime={selectedTime}
+                   setSelectedTime={setSelectedTime}
+                   setShowTimeSlots={setShowTimeSlots}
+                   />
+                 )}
+               </div>
+             </div>
           <label htmlFor="phone">WhatsApp Number</label>
-          <textarea
+          <input
             id="phone"
             value={formData.phone}
             onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-          ></textarea>
+            required
+          />
 
           <label htmlFor="notes">Comments</label>
           <textarea
