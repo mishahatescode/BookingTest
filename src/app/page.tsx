@@ -33,7 +33,7 @@ const Home: React.FC = () => {
     }
 
     const bookingData = {
-      eventTypeId: 12345, // Replace with the correct event type ID
+      eventTypeId: 1044017, // Replace with the correct event type ID
       start: `${selectedDate.toISOString().split('T')[0]}T${selectedTime}:00.000Z`, // Start time in ISO 8601 format
       name: formData.name,
       email: formData.email,
