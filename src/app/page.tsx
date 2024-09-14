@@ -49,18 +49,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   };
 
   try {
-    const response = await axios.post(
-      'https://api.cal.com/v1/bookings',
-      bookingData,
-      {
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-
-    console.log('Response:', response.data); // Log the API response
+    const response = await axios.post('/api/booking-proxy', bookingData);
 
     if (response.status === 200) {
       alert('Booking confirmed!');
@@ -70,20 +59,14 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       setSelectedLocation({ lat: null, lng: null });
       setFormData({ name: '', email: '', notes: '' });
     } else {
-      console.error('Error in response:', response.data); // Log error in response
       alert('Error: ' + response.data.error);
     }
   } catch (error) {
-      if (error instanceof Error) {
-        console.error('Error creating booking:', error.message);
-        alert('An error occurred: ' + error.message);
-      } else {
-        console.error('Unexpected error:', error);
-        alert('An unexpected error occurred.');
+    console.error('Error creating booking:', error.response?.data || error.message);
+    alert('An error occurred while submitting the form.');
   }
-}
-
 };
+
 
 
   return (
