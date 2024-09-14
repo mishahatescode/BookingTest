@@ -59,7 +59,8 @@ const Home: React.FC = () => {
         alert('Error: ' + result.error);
       }
     } catch (error: any) {
-      if (axios.isAxiosError(error)) {
+      // Manually check if the error is an Axios error by checking for the response property
+      if (error.response) {
         console.error('Axios error response:', error.response?.data || error.message);
         alert('Axios error: ' + (error.response?.data?.message || error.message));
       } else {
