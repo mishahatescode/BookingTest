@@ -33,16 +33,15 @@ const Home: React.FC = () => {
     }
 
     const bookingData = {
-      eventTypeId: 1044017, // Replace with the correct event type ID
-      start: `${selectedDate.toISOString().split('T')[0]}T${selectedTime}:00.000Z`, // Start time in ISO 8601 format
-      name: formData.name,
-      email: formData.email,
-      notes: formData.notes,
-      timeZone: "Europe/London", // Change based on the user's timezone
-      location: {
-        value: "inPerson", // You can change this based on how the location is selected
-        optionValue: "" // Optional
-      }
+      eventTypeId: 1044017,  // Replace with the correct eventTypeId
+      start: `${selectedDate.toISOString().split('T')[0]}T${selectedTime}:00.000Z`,  // Combine date and time
+      name: 'CustomBooking',  // Placeholder name for tracking
+      email: 'custom@booking.com',  // Placeholder email for tracking
+      phone: phone,
+      timeZone: "Asia/Makassar",  // Denpasar timezone
+      location: `Lat: ${selectedLocation.lat}, Lng: ${selectedLocation.lng}`,  // Add location
+      metadata: {},  // Default metadata
+      status: "PENDING"
     };
 
     try {
@@ -107,25 +106,32 @@ const Home: React.FC = () => {
           </div>
 
           {/* Form Fields */}
-          <label htmlFor="name">Name</label>
+          {/*<label htmlFor="name">Name</label>
           <input
             type="text"
             id="name"
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             required
-          />
+          />*/}
 
-          <label htmlFor="email">Email</label>
+          {/*<label htmlFor="email">Email</label>
           <input
             type="email"
             id="email"
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             required
-          />
+          />*/}
 
-          <label htmlFor="notes">Additional Notes</label>
+          <label htmlFor="phone">WhatsApp Number</label>
+          <textarea
+            id="phone"
+            value={formData.phone}
+            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+          ></textarea>
+
+          <label htmlFor="notes">Comments</label>
           <textarea
             id="notes"
             rows={4}

@@ -9,9 +9,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         start,
         name,
         email,
-        notes,
+        phone,
         timeZone,
-        location
+        location,
+        metadata,
+        status
       } = req.body;
 
       const bookingData = {
@@ -20,29 +22,33 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         responses: {
           name: name,
           email: email,
-          guests: [], // Optionally add guest info here
-          location: location,
+          phone: phone,
         },
-        metadata: {}, // Optional metadata
         timeZone: timeZone,
-        language: "en", // Set the preferred language for the booking
-        title: `Booking for ${name}`, // Customize the title as needed
-        description: notes || null, // Optional description
-        status: "PENDING", // Initial booking status
-        smsReminderNumber: null // Add phone number if needed for SMS reminders
+        location: location,
+        metadata: metadata || {},
+        status: status || 'PENDING'
       };
 
       const calcomResponse = await axios.post('https://api.cal.com/v2/bookings', bookingData, {
         headers: {
-          Authorization: `Bearer ${process.env.CALCOM_API_KEY}`, // Use environment variable for API key
+          Authorization: `Bearer ${process.env.CALCOM_API_KEY}`,
           'Content-Type': 'application/json',
         },
       });
 
-      res.status(200).json({ message: 'Booking created successfully!', data: calcomResponse.data });
+      res.status(200).json({
+        status: 'success',
+        data: calcomResponse.data,
+      });
+
     } catch (error: any) {
       console.error('Error creating booking:', error.response?.data || error.message);
-      res.status(error.response?.status || 500).json({ error: error.message });
+      res.status(error.response?.status || 500).json({
+        status: 'error',
+        message: error.response?.data?.message || 'An error occurred while creating the booking',
+        details: error.response?.data || {},
+      });
     }
   } else {
     res.setHeader('Allow', ['POST']);
