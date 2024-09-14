@@ -64,9 +64,17 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     } else {
       alert('Error: ' + response.data.error);
     }
-  } catch (error) {
-    console.error('Error creating booking:', error.response?.data || error.message);
-    alert('An error occurred while submitting the form.');
+  } // Check if the error is an instance of AxiosError
+    if (error instanceof AxiosError) {
+      console.error('Axios error response:', error.response?.data || error.message);
+      alert('Axios error: ' + (error.response?.data?.message || error.message));
+    } else if (error instanceof Error) {
+      console.error('Error creating booking:', error.message);
+      alert('An error occurred: ' + error.message);
+    } else {
+      console.error('Unexpected error:', error);
+      alert('An unexpected error occurred.');
+    }
   }
 };
 
