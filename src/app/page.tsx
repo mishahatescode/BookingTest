@@ -4,7 +4,7 @@
 
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 // Import your components
 import Calendar from '../../components/Calendar';
@@ -52,7 +52,12 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   };
 
   try {
-    const response = await axios.post('/api/booking-proxy', bookingData);
+    const response = await axios.post('/api/booking-proxy', bookingData, {
+      headers: {
+        Authorization: `Bearer ${process.env.NEXT_PUBLIC_CALCOM_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+    });
 
     if (response.status === 200) {
       alert('Booking confirmed!');
