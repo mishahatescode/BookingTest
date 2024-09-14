@@ -6,6 +6,12 @@ import axios from 'axios';
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 
+// Define the expected response data structure
+interface ApiResponse {
+  message: string;
+  error?: string; // Optional if the response may include an error
+}
+
 // Import your components
 import Calendar from '../../components/Calendar';
 import TimeSlots from '../../components/TimeSlots';
@@ -37,11 +43,11 @@ const Home: React.FC = () => {
     };
 
     try {
-      const response = await axios.post('/api/submit-form', data, {
+      const response = await axios.post<ApiResponse>('/api/submit-form', data, {
         headers: { 'Content-Type': 'application/json' },
       });
 
-      const result = await response.data;
+      const result = response.data;
 
       if (response.status === 200) {
         alert(result.message);
