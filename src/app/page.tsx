@@ -4,6 +4,7 @@
 
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
+import axios from 'axios';
 
 // Import your components
 import Calendar from '../../components/Calendar';
@@ -19,48 +20,65 @@ const Home: React.FC = () => {
   const [selectedLocation, setSelectedLocation] = useState<{ lat: number | null; lng: number | null }>({ lat: null, lng: null });
   const [formData, setFormData] = useState<{ name: string; email: string; notes: string }>({ name: '', email: '', notes: '' });
 
+  // Replace with your Cal.com Event Type ID and API key
+  const eventTypeId = '1044017'; // Replace with your actual eventTypeId
+  const apiKey = 'cal_live_481608b4fba45417eae32dc45080241a'; // Replace with your actual API key
+
   // Handle form submission
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
 
-    if (!selectedDate || !selectedTime || !selectedLocation.lat || !selectedLocation.lng) {
-      alert('Please select a date, time, and location.');
-      return;
-    }
+  if (!selectedDate || !selectedTime || !selectedLocation.lat || !selectedLocation.lng) {
+    alert('Please select a date, time, and location.');
+    return;
+  }
 
-    // Prepare data to send
-    const data = {
-      date: selectedDate.toISOString().split('T')[0],
-      time: selectedTime,
+  const bookingData = {
+    eventTypeId,
+    startTime: `${selectedDate.toISOString().split('T')[0]}T${selectedTime}:00Z`,
+    endTime: `${selectedDate.toISOString().split('T')[0]}T${parseInt(selectedTime) + 1}:00Z`,
+    location: {
       latitude: selectedLocation.lat,
       longitude: selectedLocation.lng,
-      ...formData,
-    };
-
-    try {
-      const response = await fetch('/api/submit-form', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-
-      const result = await response.json();
-
-      if (response.ok) {
-        alert(result.message);
-        // Reset the form and state
-        setSelectedDate(null);
-        setSelectedTime('');
-        setSelectedLocation({ lat: null, lng: null });
-        setFormData({ name: '', email: '', notes: '' });
-      } else {
-        alert('Error: ' + result.error);
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      alert('An error occurred while submitting the form.');
-    }
+    },
+    invitee: {
+      name: formData.name,
+      email: formData.email,
+    },
+    notes: formData.notes,
   };
+
+  try {
+    const response = await axios.post(
+      'https://api.cal.com/v1/bookings',
+      bookingData,
+      {
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    console.log('Response:', response.data); // Log the API response
+
+    if (response.status === 200) {
+      alert('Booking confirmed!');
+      // Reset the form and state
+      setSelectedDate(null);
+      setSelectedTime('');
+      setSelectedLocation({ lat: null, lng: null });
+      setFormData({ name: '', email: '', notes: '' });
+    } else {
+      console.error('Error in response:', response.data); // Log error in response
+      alert('Error: ' + response.data.error);
+    }
+  } catch (error) {
+    console.error('Error creating booking:', error.response?.data || error.message); // Log detailed error
+    alert('An error occurred while submitting the form.');
+  }
+};
+
 
   return (
     <div className="container">
