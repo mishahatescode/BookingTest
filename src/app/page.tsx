@@ -13,6 +13,8 @@ import TimeSlots from '../../components/TimeSlots';
 // Dynamically import the Map component with SSR disabled
 const MapWithNoSSR = dynamic(() => import('../../components/Map'), { ssr: false });
 
+
+
 const Home: React.FC = () => {
   // State variables
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -22,9 +24,10 @@ const Home: React.FC = () => {
 
   // Replace with your Cal.com Event Type ID and API key
   const eventTypeId = '1044017'; // Replace with your actual eventTypeId
-  const apiKey = 'cal_live_481608b4fba45417eae32dc45080241a'; // Replace with your actual API key
+  const apiKey = process.env.CALCOM_API_KEY;
 
-  // Handle form submission
+
+
 const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault();
 
@@ -53,7 +56,6 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 
     if (response.status === 200) {
       alert('Booking confirmed!');
-      // Reset the form and state
       setSelectedDate(null);
       setSelectedTime('');
       setSelectedLocation({ lat: null, lng: null });
@@ -62,8 +64,17 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       alert('Error: ' + response.data.error);
     }
   } catch (error) {
-    console.error('Error creating booking:', error.response?.data || error.message);
-    alert('An error occurred while submitting the form.');
+    // Check if the error is an instance of AxiosError
+    if (error instanceof AxiosError) {
+      console.error('Axios error response:', error.response?.data || error.message);
+      alert('Axios error: ' + (error.response?.data?.message || error.message));
+    } else if (error instanceof Error) {
+      console.error('Error creating booking:', error.message);
+      alert('An error occurred: ' + error.message);
+    } else {
+      console.error('Unexpected error:', error);
+      alert('An unexpected error occurred.');
+    }
   }
 };
 
