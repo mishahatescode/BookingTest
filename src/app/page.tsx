@@ -54,7 +54,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   try {
     const response = await axios.post('/api/booking-proxy', bookingData, {
       headers: {
-        Authorization: `Bearer ${process.env.NEXT_PUBLIC_CALCOM_API_KEY}`,
+        Authorization: `Bearer ${process.env.CALCOM_API_KEY}`,
         'Content-Type': 'application/json',
       },
     });
