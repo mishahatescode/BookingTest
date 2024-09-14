@@ -4,6 +4,12 @@ import axios from 'axios';
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 
+// Define the expected response structure from the API
+interface ApiResponse {
+  message: string;
+  error?: string;
+}
+
 // Import your components
 import Calendar from '../../components/Calendar';
 import TimeSlots from '../../components/TimeSlots';
@@ -40,14 +46,14 @@ const Home: React.FC = () => {
     };
 
     try {
-      const response = await axios.post('/api/booking-proxy', bookingData, {
+      const response = await axios.post<ApiResponse>('/api/booking-proxy', bookingData, {
         headers: { 'Content-Type': 'application/json' },
       });
 
       const result = response.data;
 
       if (response.status === 200) {
-        alert(result.message);
+        alert(result.message); // Correctly typed 'result'
         setSelectedDate(null);
         setSelectedTime('');
         setSelectedLocation({ lat: null, lng: null });
