@@ -1,5 +1,14 @@
-import axios, { AxiosError } from 'axios'; // Ensure AxiosError is imported or declared correctly
+import axios from 'axios';
 import type { NextApiRequest, NextApiResponse } from 'next';
+
+interface AxiosError<T = any> extends Error {
+  config: any;
+  code?: string;
+  request?: any;
+  response?: any;
+  isAxiosError: boolean;
+  toJSON: () => object;
+}
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
