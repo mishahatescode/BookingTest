@@ -1,0 +1,190 @@
+/* Reset and basic styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    color: #333;
+}
+
+.booking-page {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar styling */
+.sidebar {
+    width: 30%;
+    background-color: #f9fafb;
+    padding: 40px 20px;
+    border-right: 1px solid #e5e7eb;
+}
+
+.profile {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.profile img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+}
+
+.profile h2 {
+    margin-top: 15px;
+    font-size: 1.5em;
+}
+
+.profile p {
+    color: #6b7280;
+}
+
+.event-details h1 {
+    font-size: 1.75em;
+    margin-bottom: 10px;
+}
+
+.event-details p {
+    color: #4b5563;
+}
+
+/* Main content styling */
+.main-content {
+    width: 70%;
+    padding: 40px;
+}
+
+.calendar-section {
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 40px;
+    margin-bottom: 40px;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.nav-button {
+    background: none;
+    border: none;
+    font-size: 1.5em;
+    cursor: pointer;
+    color: #6b7280;
+}
+
+.month-year {
+    font-size: 1.25em;
+    font-weight: bold;
+}
+
+.calendar {
+    display: grid;
+    grid-template-rows: auto 1fr;
+}
+
+.weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    color: #6b7280;
+    margin-bottom: 10px;
+}
+
+.weekdays div {
+    font-weight: bold;
+}
+
+.days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+}
+
+.day {
+    padding: 10px;
+    border: 1px solid #e5e7eb;
+    cursor: pointer;
+}
+
+.day:hover {
+    background-color: #e5e7eb;
+}
+
+.day.unavailable {
+    color: #d1d5db;
+    cursor: not-allowed;
+}
+
+.day.selected {
+    background-color: #3b82f6;
+    color: #fff;
+}
+
+.time-section h2 {
+    margin-bottom: 20px;
+}
+
+.time-slots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.time-slot {
+    padding: 10px 15px;
+    background-color: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.time-slot:hover {
+    background-color: #e5e7eb;
+}
+
+.time-slot.selected {
+    background-color: #3b82f6;
+    color: #fff;
+    border-color: #3b82f6;
+}
+
+.confirmation-section h2 {
+    margin-bottom: 20px;
+}
+
+.booking-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.booking-form input,
+.booking-form textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+
+.booking-form button {
+    width: 100%;
+    padding: 12px;
+    background-color: #10b981;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+.booking-form button:hover {
+    background-color: #059669;
+}
