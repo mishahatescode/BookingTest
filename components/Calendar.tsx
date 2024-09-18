@@ -1,44 +1,47 @@
+// Calendar.tsx
+
 import React, { useState, useEffect } from 'react';
 
 interface CalendarProps {
   selectedDate: Date | null;
   setSelectedDate: (date: Date) => void;
-  showTimeSlots: boolean;
-  setShowTimeSlots: (show: boolean) => void; // To toggle Calendar/TimeSlots view
+  setShowTimeSlots: (show: boolean) => void; // Add this to accept the setShowTimeSlots function
 }
 
-const Calendar: React.FC<CalendarProps> = ({ selectedDate, setSelectedDate, showTimeSlots, setShowTimeSlots }) => {
+const Calendar: React.FC<CalendarProps> = ({ selectedDate, setSelectedDate, setShowTimeSlots }) => {
   const [currentMonth, setCurrentMonth] = useState<number>(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState<number>(new Date().getFullYear());
   const [daysInMonth, setDaysInMonth] = useState<number[]>([]);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const days: number[] = [];
-      const date = new Date(currentYear, currentMonth, 1);
-      const lastDay = new Date(currentYear, currentMonth + 1, 0).getDate();
+    const days: number[] = [];
+    const date = new Date(currentYear, currentMonth, 1);
+    const lastDay = new Date(currentYear, currentMonth + 1, 0).getDate();
 
-      for (let i = 1; i <= lastDay; i++) {
-        days.push(i);
-      }
-      setDaysInMonth(days);
+    for (let i = 1; i <= lastDay; i++) {
+      days.push(i);
     }
+    setDaysInMonth(days);
   }, [currentMonth, currentYear]);
 
   const handlePrevMonth = () => {
     setCurrentMonth((prev) => (prev === 0 ? 11 : prev - 1));
-    if (currentMonth === 0) setCurrentYear((prev) => prev - 1);
+    if (currentMonth === 0) {
+      setCurrentYear((prev) => prev - 1);
+    }
   };
 
   const handleNextMonth = () => {
     setCurrentMonth((prev) => (prev === 11 ? 0 : prev + 1));
-    if (currentMonth === 11) setCurrentYear((prev) => prev + 1);
+    if (currentMonth === 11) {
+      setCurrentYear((prev) => prev + 1);
+    }
   };
 
   const handleDateClick = (day: number) => {
     const date = new Date(currentYear, currentMonth, day);
     setSelectedDate(date);
-    setShowTimeSlots(true); // Show the TimeSlots component after selecting a date
+    setShowTimeSlots(true); // Trigger TimeSlots view
   };
 
   return (
@@ -48,7 +51,8 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDate, setSelectedDate, show
           &#10094;
         </button>
         <div className="month-year">
-          {new Intl.DateTimeFormat('en-US', { month: 'long' }).format(new Date(currentYear, currentMonth))} {currentYear}
+          {new Intl.DateTimeFormat('en-US', { month: 'long' }).format(new Date(currentYear, currentMonth))}{' '}
+          {currentYear}
         </div>
         <button className="nav-button" onClick={handleNextMonth}>
           &#10095;

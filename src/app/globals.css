@@ -1,5 +1,44 @@
-/* Import Google Font */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+/* Import Google Font with variable weights */
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+/* Global font application */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif; /* Apply Inter globally */
+}
+
+body {
+  background-color: #f9fafb;
+  color: #111827;
+  font-family: var(--font-family); /* Ensure font is applied globally */
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Example class for bold text */
+.inter-bold {
+  font-family: var(--font-family);
+  font-weight: 700;
+}
+
+/* Example class for light text */
+.inter-light {
+  font-family: var(--font-family);
+  font-weight: 300;
+}
+
+/* Ensure all input, buttons, textareas also inherit the font */
+input, textarea, button {
+  font-family: var(--font-family);
+}
+
+h1, h2, h3, h4, h5, h6, p, label, input, textarea, button {
+  font-family: 'Inter', sans-serif; /* Set Inter font globally for most elements */
+}
 
 /* Reset and Base Styles */
 * {
@@ -9,9 +48,14 @@
 }
 
 body {
-  font-family: 'Inter', sans-serif;
   background-color: #f9fafb;
   color: #111827;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  font-family: "Inter", sans-serif;
 }
 
 /* Container */
@@ -21,9 +65,9 @@ body {
   padding: 20px 0;
   display: flex;
   justify-content: space-between;
-  gap: 0; /* No gap between columns */
-  align-items: stretch; /* Ensures all columns stretch to equal height */
-  height: 100vh; /* Use full viewport height */
+  gap: 0;
+  align-items: stretch;
+  height: auto;
 }
 
 /* First column - Service Details */
@@ -31,12 +75,37 @@ body {
   width: 30%;
   background-color: #fff;
   padding: 20px;
-  border-radius: 0; /* No rounded corners */
+  border-radius: 0;
   border: 1px solid #e5e7eb;
-  border-right: none; /* Remove right border for continuous block appearance */
+  border-right: none;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+}
+
+.service-info h2 {
+  font-size: 24px;
+  margin-bottom: 10px;
+  color: #111827;
+  font-weight: 700;
+  /* Apply Inter Bold */
+  font-family: "Inter", sans-serif;
+}
+
+.service-info h3 {
+  font-size: 18px;
+  margin-bottom: 20px;
+  color: #4b5563;
+  font-weight: 500;
+  /* Apply Inter Text */
+  font-family: "Inter", sans-serif;
+}
+
+.service-info p {
+  font-size: 14px;
+  color: #6b7280;
+  /* Apply Inter Text */
+  font-family: "Inter", sans-serif;
 }
 
 /* Middle column - Map Component */
@@ -47,15 +116,15 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: stretch;
-  border-left: none; /* No left/right borders */
-  border-right: none; /* No rounded corners */
+  border-left: none;
+  border-right: none;
 }
 
 #map {
   width: 100%;
-  height: 100%; /* Ensures the map stretches to fill the middle column */
-  border: none; /* Remove any borders */
-  border-radius: 0; /* Remove rounded corners */
+  height: 100%;
+  border: none;
+  border-radius: 0;
 }
 
 /* Third column - Form */
@@ -63,9 +132,9 @@ body {
   width: 35%;
   background-color: #fff;
   padding: 20px;
-  border-radius: 0; /* No rounded corners */
+  border-radius: 0;
   border: 1px solid #e5e7eb;
-  border-left: none; /* Remove left border for continuous block appearance */
+  border-left: none;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -77,6 +146,8 @@ body {
   font-weight: 500;
   margin-bottom: 5px;
   display: inline-block;
+  /* Apply Inter Text */
+  font-family: "Inter", sans-serif;
 }
 
 .form-container input,
@@ -90,12 +161,17 @@ body {
   color: #111827;
   background-color: #ffffff;
   transition: border-color 0.2s, box-shadow 0.2s;
+  /* Apply Inter Text */
+  font-family: "Inter", sans-serif;
 }
 
 /* Placeholder Styling */
 ::placeholder {
-  color: #9ca3af; /* Light gray placeholder color */
+  color: #9ca3af;
   font-size: 14px;
+  font-weight: 300;
+  /* Apply Inter Light */
+  font-family: "Inter", sans-serif;
 }
 
 /* Focus States */
@@ -116,7 +192,8 @@ body {
   cursor: pointer;
   font-size: 16px;
   font-weight: 500;
-  margin-top: 20px;
+  /* Apply Inter Text */
+  font-family: "Inter", sans-serif;
 }
 
 .form-container button:hover {
@@ -130,6 +207,8 @@ body {
   font-size: 16px;
   margin-right: 20px;
   cursor: pointer;
+  /* Apply Inter Text */
+  font-family: "Inter", sans-serif;
 }
 
 .form-container .back-button:hover {
@@ -141,6 +220,9 @@ body {
   font-size: 12px;
   color: #6b7280;
   margin-top: 10px;
+  font-weight: 300;
+  /* Apply Inter Light */
+  font-family: "Inter", sans-serif;
 }
 
 /* Icon Styling */
@@ -163,10 +245,6 @@ body {
 /* Calendar Section */
 .calendar-section {
   background-color: #ffffff;
-  border: none;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 20px;
 }
 
 .calendar-header {
@@ -180,18 +258,22 @@ body {
   background: none;
   border: none;
   font-size: 20px;
-  color: #6b7280; /* Gray for arrow icons */
+  color: #6b7280;
   cursor: pointer;
+  /* Apply Inter Text */
+  font-family: "Inter", sans-serif;
 }
 
 .calendar-header .nav-button:hover {
-  color: #111827; /* Darker on hover */
+  color: #111827;
 }
 
 .calendar-header .month-year {
   font-size: 16px;
   font-weight: 600;
-  color: #111827; /* Darker font color */
+  color: #111827;
+  /* Apply Inter Text */
+  font-family: "Inter", sans-serif;
 }
 
 .weekdays {
@@ -199,7 +281,9 @@ body {
   grid-template-columns: repeat(7, 1fr);
   text-align: center;
   margin-bottom: 10px;
-  color: #6b7280; /* Gray for weekday labels */
+  color: #6b7280;
+  /* Apply Inter Text */
+  font-family: "Inter", sans-serif;
 }
 
 .weekdays div {
@@ -210,7 +294,7 @@ body {
 .days {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 8px; /* Small gap between days */
+  gap: 8px;
   text-align: center;
 }
 
@@ -219,34 +303,34 @@ body {
   cursor: pointer;
   border-radius: 8px;
   font-size: 14px;
-  background-color: #f9fafb; /* Light gray background for idle state */
-  color: #374151; /* Dark gray for day numbers */
+  background-color: #f9fafb;
+  color: #374151;
   transition: background-color 0.2s, color 0.2s;
+  /* Apply Inter Text */
+  font-family: "Inter", sans-serif;
 }
 
 .day:hover {
-  background-color: #f3f4f6; /* Slightly darker on hover */
+  background-color: #f3f4f6;
 }
 
 .day.selected {
-  background-color: #111827; /* Dark background for selected day */
-  color: #ffffff; /* White text for selected day */
+  background-color: #111827;
+  color: #ffffff;
 }
 
 .day.disabled {
-  color: #9ca3af; /* Lighter gray for disabled days */
+  color: #9ca3af;
   cursor: not-allowed;
 }
 
 .day.disabled:hover {
-  background-color: transparent; /* No hover effect for disabled days */
+  background-color: transparent;
 }
 
 /* TimeSlots Section */
 .time-section {
   background-color: #ffffff;
-  border: none;
-  border-radius: 8px;
   padding: 0;
   margin-top: 20px;
 }
@@ -257,56 +341,37 @@ body {
   margin-bottom: 10px;
   color: #111827;
   text-align: left;
+  /* Apply Inter Text */
+  font-family: "Inter", sans-serif;
 }
 
 .time-slots {
   display: flex;
-  flex-direction: column; /* Stack vertically */
-  gap: 8px; /* Smaller gap between buttons */
+  flex-direction: column;
+  gap: 0px;
 }
 
 .time-slot {
-  width: 100%;
-  padding: 10px 0; /* Less padding for more compact buttons */
-  background-color: #f9fafb;
-  border: 1px solid #d1d5db; /* Light border */
-  border-radius: 8px; /* Rounded corners */
-  text-align: center;
-  cursor: pointer;
-  font-size: 16px; /* Larger font for time */
-  color: #374151; /* Dark gray for idle state text */
-  transition: background-color 0.2s, border-color 0.2s;
+  padding: 10px 0 !important;
+  margin: 2px 0 !important;
+  cursor: pointer !important;
+  border-radius: 8px !important;
+  font-size: 14px !important;
+  background-color: #f9fafb !important;
+  color: #374151 !important;
+  border: 1px solid #d1d5db !important;
+  text-align: center !important;
+  transition: background-color 0.2s !important, color 0.2s !important, border-color 0.2s !important;
+  /* Apply Inter Text */
+  font-family: "Inter", sans-serif;
 }
 
 .time-slot:hover {
-  background-color: #f3f4f6; /* Slight hover effect */
+  background-color: #f3f4f6 !important;
 }
 
 .time-slot.selected {
-  background-color: #111827; /* Dark background for selected time slot */
-  color: #ffffff; /* White text for selected time slot */
-  border-color: #111827; /* Dark border for selected time slot */
-}
-
-/* Time Format Button (12h/24h) */
-.time-format-button {
-  padding: 8px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  background-color: #ffffff;
-  font-size: 14px;
-  color: #374151;
-  cursor: pointer;
-  transition: background-color 0.2s, border-color 0.2s;
-}
-
-.time-format-button.selected {
-  background-color: #f9fafb;
-  border-color: #d1d5db;
-  font-weight: 600;
-}
-
-.time-format-button:hover {
-  background-color: #f3f4f6;
-  border-color: #d1d5db;
+  background-color: #111827 !important;
+  color: #ffffff !important;
+  border-color: #111827 !important;
 }

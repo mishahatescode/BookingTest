@@ -37,14 +37,14 @@ const Home: React.FC = () => {
     }
 
     const bookingData = {
-      eventTypeId: 1044017,  // Replace with the correct eventTypeId
-      start: `${selectedDate.toISOString().split('T')[0]}T${selectedTime}:00.000Z`,  // Combine date and time
-      name: 'CustomBooking',  // Placeholder name for tracking
-      email: 'custom@booking.com',  // Placeholder email for tracking
-      phone: formData.phone,  // Correctly accessing phone from formData
-      timeZone: "Asia/Makassar",  // Denpasar timezone
-      location: `Lat: ${selectedLocation.lat}, Lng: ${selectedLocation.lng}`,  // Add location
-      metadata: {},  // Default metadata
+      eventTypeId: 1044017,
+      start: `${selectedDate?.toISOString().split('T')[0]}T${selectedTime}:00.000Z`,
+      name: 'CustomBooking',
+      email: 'custom@booking.com',
+      phone: formData.phone,
+      timeZone: "Asia/Makassar",
+      location: `Lat: ${selectedLocation.lat}, Lng: ${selectedLocation.lng}`,
+      metadata: {},
       status: "PENDING"
     };
 
@@ -56,11 +56,11 @@ const Home: React.FC = () => {
       const result = response.data;
 
       if (response.status === 200) {
-        alert(result.message); 
+        alert(result.message);
         setSelectedDate(null);
         setSelectedTime('');
         setSelectedLocation({ lat: null, lng: null });
-        setFormData({ name: '', email: '', notes: '', phone: '' }); 
+        setFormData({ name: '', email: '', notes: '', phone: '' });
       } else {
         alert('Error: ' + result.error);
       }
@@ -75,10 +75,14 @@ const Home: React.FC = () => {
     }
   };
 
+  // Handle back navigation from TimeSlots to Calendar
+  const handleBackToCalendar = () => {
+    setShowTimeSlots(false);
+  };
+
   return (
     <div className="container">
       <div className="service-details">
-        {/* Add service details here, if needed */}
         <div className="service-info">
           <h2>GoWash Bali</h2>
           <h3>Pickup & Wash - 100.000 Rp</h3>
@@ -98,24 +102,26 @@ const Home: React.FC = () => {
       <div className="form-container">
         <form className="booking-form" onSubmit={handleSubmit}>
           <h2>Confirm Your Booking</h2>
-          <div className="container">
-               <div className="flex">
-                 {/* Conditionally render Calendar or TimeSlots */}
-                 {!showTimeSlots ? (
-                   <Calendar
-                   selectedDate={selectedDate}
-                   setSelectedDate={setSelectedDate}
-                   setShowTimeSlots={setShowTimeSlots}
-                   />
-                   ) : (
-                   <TimeSlots
-                   selectedTime={selectedTime}
-                   setSelectedTime={setSelectedTime}
-                   setShowTimeSlots={setShowTimeSlots}
-                   />
-                 )}
-               </div>
-             </div>
+
+          {/* Conditionally render Calendar or TimeSlots */}
+          {!showTimeSlots ? (
+            <Calendar
+              selectedDate={selectedDate}
+              setSelectedDate={setSelectedDate}
+              setShowTimeSlots={setShowTimeSlots} // Pass setShowTimeSlots to Calendar
+            />
+          ) : (
+            <div>
+              <button className="back-button" onClick={handleBackToCalendar}>
+                &larr; Back to Calendar
+              </button>
+              <TimeSlots
+                selectedTime={selectedTime}
+                setSelectedTime={setSelectedTime}
+              />
+            </div>
+          )}
+
           <label htmlFor="phone">WhatsApp Number</label>
           <input
             id="phone"
@@ -132,7 +138,7 @@ const Home: React.FC = () => {
             onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
           ></textarea>
 
-          <button type="submit">Confirm Booking</button>
+          <button type="submit" className="confirm-button">Confirm Booking</button>
         </form>
       </div>
     </div>
