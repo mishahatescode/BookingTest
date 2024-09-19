@@ -12,6 +12,7 @@
     "@vercel/speed-insights": "^1.0.12",
     "axios": "^1.7.7",
     "leaflet": "^1.9.4",
+    "lucide-react": "^0.441.0",
     "next": "14.2.11",
     "react": "^18",
     "react-dom": "^18"

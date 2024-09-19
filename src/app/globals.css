@@ -75,7 +75,8 @@ body {
   width: 30%;
   background-color: #fff;
   padding: 20px;
-  border-radius: 0;
+  border-top-left-radius: 16px; 
+  border-bottom-left-radius: 16px; 
   border: 1px solid #e5e7eb;
   border-right: none;
   display: flex;
@@ -83,29 +84,41 @@ body {
   justify-content: space-between;
 }
 
-.service-info h2 {
-  font-size: 24px;
-  margin-bottom: 10px;
-  color: #111827;
-  font-weight: 700;
-  /* Apply Inter Bold */
-  font-family: "Inter", sans-serif;
-}
-
-.service-info h3 {
-  font-size: 18px;
-  margin-bottom: 20px;
-  color: #4b5563;
-  font-weight: 500;
-  /* Apply Inter Text */
-  font-family: "Inter", sans-serif;
+.service-info {
+  margin-left: 10px; /* Add some padding to the left to align the content */
+  padding-right: 10px; /* Ensure content doesn't touch the right side */
 }
 
 .service-info p {
-  font-size: 14px;
-  color: #6b7280;
-  /* Apply Inter Text */
+  font-size: 14px; /* Standardize paragraph font size */
+  font-weight: 400; /* Set font weight to regular */
+  color: #6b7280; /* Set text to a lighter gray */
+  display: flex; /* Ensure that icons and text are aligned properly */
+  align-items: center; /* Center the text vertically with the icons */
+  margin-bottom: 12px; /* Add consistent space below each element */
+}
+
+.service-info h2 {
   font-family: "Inter", sans-serif;
+  font-weight: 600; /* Apply a bold weight for "GoWash Bali" */
+  color: #111827;
+  margin-bottom: 16px; /* Reduce space below the heading */
+}
+
+.service-info h3 {
+  font-size: 18px; /* Make the subheading smaller */
+  font-weight: 500; /* Adjust font weight */
+  color: #6b7280; /* Adjust color to a slightly lighter tone */
+  margin-bottom: 16px; /* Adjust margin for consistency */
+}
+
+
+.icon {
+  margin-right: 6px; /* Slightly reduce space between icon and text */
+  width: 16px; /* Set the width of icons */
+  height: 16px; /* Set the height of icons */
+  stroke-width: 1.5; /* Make icons a little thinner */
+  color: #6b7280; /* Match icon color to text */
 }
 
 /* Middle column - Map Component */
@@ -116,10 +129,11 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: stretch;
+  border-top: 1px solid #e5e7eb; 
+  border-bottom: 1px solid #e5e7eb; 
   border-left: none;
   border-right: none;
 }
-
 #map {
   width: 100%;
   height: 100%;
@@ -132,7 +146,8 @@ body {
   width: 35%;
   background-color: #fff;
   padding: 20px;
-  border-radius: 0;
+  border-top-right-radius: 16px; /* Rounded top-right corner */
+  border-bottom-right-radius: 16px; /* Rounded bottom-right corner */
   border: 1px solid #e5e7eb;
   border-left: none;
   display: flex;
@@ -201,18 +216,21 @@ body {
 }
 
 .form-container .back-button {
-  background-color: transparent;
+  background-color: #f9fafb;
   border: none;
-  color: #111827;
+  border-radius: 12px; /* Rounded corners */
+  color: #374151;
   font-size: 16px;
   margin-right: 20px;
   cursor: pointer;
-  /* Apply Inter Text */
   font-family: "Inter", sans-serif;
+  font-size: 16px; /* Slightly larger font */
+  padding: 12px;
+  transition: background-color 0.2s, color 0.2s;
 }
 
 .form-container .back-button:hover {
-  color: #000000;
+  background-color: #f3f4f6;
 }
 
 /* Additional Styling */
@@ -251,39 +269,40 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 20px; /* Increase space */
 }
 
+.nav-buttons {
+  display: flex;
+  gap: 4px; /* Adds some space between the left and right arrows */
+}
+
+
 .calendar-header .nav-button {
-  background: none;
-  border: none;
-  font-size: 20px;
-  color: #6b7280;
+  border-radius: 12px; /* Rounded corners */
+  font-size: 16px; /* Slightly larger font */
+  background-color: #f9fafb;
+  color: #374151;
   cursor: pointer;
-  /* Apply Inter Text */
-  font-family: "Inter", sans-serif;
+  padding: 10px 14px 6px 14px; /* Remove default padding */
 }
 
 .calendar-header .nav-button:hover {
-  color: #111827;
+  background-color: #f3f4f6;
 }
 
 .calendar-header .month-year {
-  font-size: 16px;
+  font-size: 18px; /* Larger font for the month and year */
   font-weight: 600;
   color: #111827;
-  /* Apply Inter Text */
-  font-family: "Inter", sans-serif;
 }
 
 .weekdays {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   text-align: center;
-  margin-bottom: 10px;
+  margin-bottom: 16px; /* Adjusted margin */
   color: #6b7280;
-  /* Apply Inter Text */
-  font-family: "Inter", sans-serif;
 }
 
 .weekdays div {
@@ -301,13 +320,11 @@ body {
 .day {
   padding: 12px;
   cursor: pointer;
-  border-radius: 8px;
-  font-size: 14px;
+  border-radius: 12px; /* Rounded corners */
+  font-size: 16px; /* Slightly larger font */
   background-color: #f9fafb;
   color: #374151;
   transition: background-color 0.2s, color 0.2s;
-  /* Apply Inter Text */
-  font-family: "Inter", sans-serif;
 }
 
 .day:hover {
@@ -321,6 +338,7 @@ body {
 
 .day.disabled {
   color: #9ca3af;
+  background-color: #e5e7eb; /* Gray background for disabled days */
   cursor: not-allowed;
 }
 
@@ -328,6 +346,14 @@ body {
   background-color: transparent;
 }
 
+/* Dot Indicator */
+.day .dot {
+  width: 6px;
+  height: 6px;
+  background-color: #111827;
+  border-radius: 50%;
+  margin: 2px auto 0 auto;
+}
 /* TimeSlots Section */
 .time-section {
   background-color: #ffffff;
