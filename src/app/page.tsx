@@ -10,6 +10,11 @@ import { Clock, MapPin } from 'lucide-react';
 // Dynamically import the Map component with SSR disabled
 const MapWithNoSSR = dynamic(() => import('../../components/Map'), { ssr: false });
 
+interface ApiResponse {
+  message: string;
+  error?: string;
+}
+
 const Home: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<{ startTime: string, endTime: string } | null>(null); 
   const [selectedTime, setSelectedTime] = useState<string>(''); 
@@ -95,14 +100,16 @@ const Home: React.FC = () => {
         headers: { 'Content-Type': 'application/json' },
       });
 
+      const data = response.data as ApiResponse; // Cast response to ApiResponse
+
       if (response.status === 200) {
-        alert(response.data.message);
+        alert(data.message);
         setSelectedDate(null); // Reset date
         setSelectedTime('');    // Reset time
         setSelectedLocation({ lat: null, lng: null });
         setFormData({ name: '', email: '', notes: '', phone: '' });
       } else {
-        alert('Error: ' + response.data.error);
+        alert('Error: ' + data.error);
       }
     } catch (error: any) {
       console.error('Error:', error.message);
