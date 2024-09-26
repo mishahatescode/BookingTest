@@ -1,10 +1,7 @@
-// Map.tsx
-'use client';
-
 import React, { useEffect } from 'react';
 import L from 'leaflet';
-import 'leaflet/dist/leaflet.css'; // Import Leaflet CSS
-import { LocationIcon } from './Icons'; // Assuming you moved MapPin to Icons.tsx
+import 'leaflet/dist/leaflet.css';
+import { MapPinIconSVG } from './Icons'; // Import the SVG string
 
 interface MapProps {
   selectedLocation: { lat: number | null; lng: number | null };
@@ -14,19 +11,15 @@ interface MapProps {
 const Map: React.FC<MapProps> = ({ selectedLocation, setSelectedLocation }) => {
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      // Initialize the map at Ungasan, Bali
-      const map = L.map('map').setView([-8.8141, 115.1628], 13);
+      const map = L.map('map').setView([-8.8166, 115.1652], 13);  // Default to Ungasan, Bali
 
-      // Add OpenStreetMap tiles
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; OpenStreetMap contributors',
       }).addTo(map);
 
-      // Geofence coordinates
-      const geofenceCenter: [number, number] = [-8.8141, 115.1628]; // Ungasan, Bali
-      const geofenceRadius = 7000; // 7 km radius
+      const geofenceCenter: [number, number] = [-8.8166, 115.1652];
+      const geofenceRadius = 7000; // 7km radius
 
-      // Add a circle to represent the geofence
       const geofenceCircle = L.circle(geofenceCenter, {
         color: 'red',
         fillColor: '#f03',
@@ -34,43 +27,34 @@ const Map: React.FC<MapProps> = ({ selectedLocation, setSelectedLocation }) => {
         radius: geofenceRadius,
       }).addTo(map);
 
-      // Render MapPin as custom icon
-      const customIcon = L.divIcon({
-        html: `<div style="width: 40px; height: 40px;">${LocationIcon()}</div>`, // Use the custom MapPin
-        iconSize: [40, 40], // Increase the size of the icon
-        iconAnchor: [20, 40], // Anchor it at the bottom center
-        className: '', // Empty className to avoid Leaflet default styles
-      });
-
-      // Marker for the selected location
       let marker: L.Marker | null = null;
 
-      // Handle map click event
       map.on('click', function (e: L.LeafletMouseEvent) {
         const { lat, lng } = e.latlng;
-
-        // Check if the clicked location is within the geofence
         const distance = map.distance(e.latlng, geofenceCenter);
+
         if (distance > geofenceRadius) {
           alert('Selected location is outside the allowed area.');
           return;
         }
 
-        // If marker exists, move it; else, create a new one
         if (marker) {
           marker.setLatLng(e.latlng);
         } else {
-          marker = L.marker(e.latlng, { icon: customIcon }).addTo(map);
+          marker = L.marker(e.latlng, {
+            icon: L.divIcon({
+              html: MapPinIconSVG, // Use the raw SVG string here
+              className: '', // Clear any default class styles
+              iconSize: [24, 24], // Set the size explicitly
+            }),
+          }).addTo(map);
         }
 
-        // Update the selected location
         setSelectedLocation({ lat, lng });
       });
 
-      // Adjust map view to geofence
       map.fitBounds(geofenceCircle.getBounds());
 
-      // Cleanup on unmount
       return () => {
         map.remove();
       };
