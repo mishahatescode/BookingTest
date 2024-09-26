@@ -14,7 +14,7 @@ const Map: React.FC<MapProps> = ({ selectedLocation, setSelectedLocation }) => {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       // Initialize the map at Ungasan, Bali with a zoom level
-      const map = L.map('map').setView([-8.8141, 115.1628], 13); 
+      const map = L.map('map').setView([-8.8141, 115.1628], 13);
 
       // Add OpenStreetMap tiles
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -33,9 +33,9 @@ const Map: React.FC<MapProps> = ({ selectedLocation, setSelectedLocation }) => {
         radius: geofenceRadius,
       }).addTo(map);
 
-      // SVG icon for the MapPin
+      // SVG icon for the MapPin (can be customized further if needed)
       const mapPinSVG = `
-        <svg xmlns="http://www.w3.org/2000/svg" fill="red" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" width="24" height="24">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="red" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
           <path d="M12 2a10 10 0 0110 10c0 5.25-4.5 9.75-10 14.75C6.5 21.75 2 17.25 2 12A10 10 0 0112 2z" />
           <circle cx="12" cy="12" r="3" />
         </svg>
@@ -44,7 +44,9 @@ const Map: React.FC<MapProps> = ({ selectedLocation, setSelectedLocation }) => {
       // Create a custom Leaflet icon using the MapPin SVG
       const customIcon = L.divIcon({
         html: mapPinSVG,
-        className: '' // Empty className to remove default styles
+        iconSize: [24, 24], // Adjust size of the icon
+        iconAnchor: [12, 24], // Anchor it at the bottom center (so it points correctly)
+        className: 'custom-map-pin', // Remove default styling
       });
 
       // Marker for the selected location
