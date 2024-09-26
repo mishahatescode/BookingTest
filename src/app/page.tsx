@@ -5,15 +5,15 @@ import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import Calendar from '../../components/Calendar';
 import TimeSlots from '../../components/TimeSlots';
-import { Clock, MapPin, Globe } from 'lucide-react';
+import { Clock, MapPin } from 'lucide-react';
 
+// Dynamically import the Map component with SSR disabled
 const MapWithNoSSR = dynamic(() => import('../../components/Map'), { ssr: false });
 
 const Home: React.FC = () => {
-  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
-  const [startTime, setStartTime] = useState<string>(''); // Add startTime
-  const [endTime, setEndTime] = useState<string>('');     // Add endTime
-  const [selectedTime, setSelectedTime] = useState<string>('');
+  const [selectedDate, setSelectedDate] = useState<{ startTime: string, endTime: string } | null>(null); 
+  const [selectedTime, setSelectedTime] = useState<string>(''); 
+  const [computedStartTime, setComputedStartTime] = useState<string>('');  // Final computed startTime after combining date and time
   const [showTimeSlots, setShowTimeSlots] = useState(false); 
   const [selectedLocation, setSelectedLocation] = useState<{ lat: number | null; lng: number | null }>({ lat: null, lng: null });
   const [formData, setFormData] = useState<{ name: string; email: string; notes: string; phone: string }>({
@@ -23,31 +23,73 @@ const Home: React.FC = () => {
     phone: ''
   });
 
+  // Combine the selected date and time directly, without unwanted timezone shifts
+  const combineDateAndTime = (dateString: string, timeString: string) => {
+    const [hours, minutes] = timeString.split(':').map(Number);
+
+    // Parse date and set the correct time
+    const date = new Date(dateString);
+    date.setHours(hours, minutes, 0, 0);
+
+    // Return local time without UTC 'Z' suffix
+    return date.toLocaleDateString('sv-SE') + 'T' + timeString + ':00';
+  };
+
+  // Recompute startTime when selectedTime or selectedDate changes
   useEffect(() => {
-    if (!selectedDate) {
-      setSelectedDate(new Date());
+    if (selectedDate && selectedTime) {
+      const startTime = combineDateAndTime(selectedDate.startTime, selectedTime);
+      console.log("Final computed startTime for booking:", startTime);
+      setComputedStartTime(startTime);
     }
-  }, [selectedDate]);
+  }, [selectedDate, selectedTime]);
+
+  // Log selected date
+  const handleDateSelect = (startTime: string, endTime: string) => {
+    const date = new Date(startTime).toISOString().split('T')[0];
+    console.log("Date Selected: Start Time:", date, "End Time:", endTime); // Log date selection
+
+    setSelectedDate({
+      startTime: new Date(startTime).toISOString(),
+      endTime: new Date(endTime).toISOString(),
+    });
+  };
+
+  // Log selected time
+  const handleTimeSelect = (time: string) => {
+    console.log("Time Slot Selected:", time); // Log time slot selection
+    setSelectedTime(time);
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!selectedDate || !selectedTime || !selectedLocation.lat || !selectedLocation.lng) {
+
+    if (!selectedDate || !computedStartTime || !selectedLocation.lat || !selectedLocation.lng) {
       alert('Please select a date, time, and location.');
       return;
     }
 
+    // Create the endTime (assuming 1-hour slots)
+    const endTime = new Date(computedStartTime);
+    endTime.setHours(endTime.getHours() + 1); // Add 1 hour
+    const endTimeISO = endTime.toISOString();
+
+    console.log("Computed endTime:", endTimeISO);
+
+    // Prepare the booking data
     const bookingData = {
-      eventTypeId: 1044017,
-      start: `${selectedDate?.toISOString().split('T')[0]}T${selectedTime}:00.000Z`,
-      name: 'CustomBooking',
-      email: 'custom@booking.com',
+      startTime: computedStartTime,  // Use the computed startTime
+      endTime: endTimeISO,
+      name: 'Custom Booking Form Used', // Hardcoded name
+      email: 'admin@admin.com', // Hardcoded email
       phone: formData.phone,
-      timeZone: "Asia/Makassar",
       location: `Lat: ${selectedLocation.lat}, Lng: ${selectedLocation.lng}`,
-      metadata: {},
-      status: "PENDING"
+      notes: formData.notes || ''
     };
 
+    console.log("Booking Data being sent:", bookingData);
+
+    // Send booking data to the backend
     try {
       const response = await axios.post('/api/booking-proxy', bookingData, {
         headers: { 'Content-Type': 'application/json' },
@@ -55,8 +97,8 @@ const Home: React.FC = () => {
 
       if (response.status === 200) {
         alert(response.data.message);
-        setSelectedDate(new Date());
-        setSelectedTime('');
+        setSelectedDate(null); // Reset date
+        setSelectedTime('');    // Reset time
         setSelectedLocation({ lat: null, lng: null });
         setFormData({ name: '', email: '', notes: '', phone: '' });
       } else {
@@ -77,7 +119,6 @@ const Home: React.FC = () => {
           <h2>Pickup & Wash - 100.000 Rp</h2>
           <p><Clock className="icon" /> 1h</p>
           <p><MapPin className="icon" /> Custom attendee location</p>
-          <p><Globe className="icon" /> Asia/Makassar</p>
         </div>
       </div>
 
@@ -89,17 +130,21 @@ const Home: React.FC = () => {
         <form className="booking-form" onSubmit={handleSubmit}>
           {!showTimeSlots ? (
             <Calendar
-              setSelectedDate={setSelectedDate}
-              setStartTime={setStartTime}
-              setEndTime={setEndTime}
+              setSelectedDate={handleDateSelect}
               setShowTimeSlots={setShowTimeSlots}
             />
           ) : (
             <>
-              <button className="back-button" onClick={() => setShowTimeSlots(false)}>
+              <button className="back-button" type="button" onClick={() => setShowTimeSlots(false)}>
                 &larr; Back to Calendar
               </button>
-              <TimeSlots selectedDate={selectedDate} startTime={startTime} endTime={endTime} selectedTime={selectedTime} setSelectedTime={setSelectedTime} />
+              {selectedDate && (
+                <TimeSlots
+                  selectedDate={selectedDate}
+                  selectedTime={selectedTime}
+                  setSelectedTime={handleTimeSelect}
+                />
+              )}
             </>
           )}
 

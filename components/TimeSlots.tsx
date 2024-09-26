@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { LoaderIcon } from './icons';  // Import the LoaderIcon
+import _ from 'lodash';
 
 interface TimeSlotsProps {
-  selectedDate: { startTime: string; endTime: string } | null;  // Expect an object with startTime and endTime
+  selectedDate: { startTime: string; endTime: string } | null;
   selectedTime: string;
   setSelectedTime: (time: string) => void;
 }
@@ -13,41 +15,52 @@ const TimeSlots: React.FC<TimeSlotsProps> = ({ selectedDate, selectedTime, setSe
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (selectedDate) {
+    const startTime = selectedDate?.startTime;
+    const endTime = selectedDate?.endTime;
+
+    if (startTime && endTime) {
       setLoading(true);
       setError(null);
 
-      const { startTime, endTime } = selectedDate;  // Destructure startTime and endTime from selectedDate
-      const eventTypeId = 1044017;  // Use your actual event type ID
-      const date = new Date(selectedDate)
+      const debouncedFetch = _.debounce(() => {
+        axios
+          .get('/api/booking-proxy', {
+            params: {
+              startTime,
+              endTime,
+            },
+          })
+          .then((response) => {
+            setAvailableTimes(response.data.availableTimes);
+            setLoading(false);
+            console.log('Available times:', response.data.availableTimes);
+          })
+          .catch((err) => {
+            setError('Failed to load available time slots');
+            setLoading(false);
+          });
+      }, 300);
 
-      axios
-        .get('/api/booking-proxy', {
-          params: {
-            startTime: date.toISOString(),  // Pass startTime to the proxy
-            endTime: date.toISOString(),      // Pass endTime to the proxy
-            eventTypeId: eventTypeId,
-          },
-        })
-        .then((response) => {
-          const times = response.data.availableTimes;
-          setAvailableTimes(times);
-          setLoading(false);
-        })
-        .catch((err) => {
-          setError('Failed to load available time slots');
-          setLoading(false);
-          console.error('Error fetching time slots:', err);
-        });
+      debouncedFetch();
+      return () => debouncedFetch.cancel();
     }
   }, [selectedDate]);
 
   const handleTimeClick = (time: string) => {
     setSelectedTime(time);
-  };
 
+    // Log when the user clicks a time slot
+    console.log("Time selected by user:", time);
+  };
+  
   if (loading) {
-    return <div>Loading available time slots...</div>;
+    return (
+      <div className="time-section">
+        <div className="loader-container">
+          <LoaderIcon className="text-blue-500" />
+        </div>
+      </div>
+    );
   }
 
   if (error) {
@@ -55,7 +68,7 @@ const TimeSlots: React.FC<TimeSlotsProps> = ({ selectedDate, selectedTime, setSe
   }
 
   return (
-    <div className="time-section">
+    <div className="time-section fixed-height">
       <h2>Select a Time</h2>
       <div className="time-slots">
         {availableTimes.length > 0 ? (

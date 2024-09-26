@@ -354,6 +354,44 @@ body {
   border-radius: 50%;
   margin: 2px auto 0 auto;
 }
+
+
+/* Loader container */
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%; /* Ensure it takes the full height of its parent container */
+}
+
+/* Make sure the loader itself is 16x16px */
+.loader-container svg {
+  width: 16px;
+  height: 16px;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Opacity control for the Loader */
+.opacity-25 {
+  opacity: 0.25;
+}
+
+.opacity-75 {
+  opacity: 0.75;
+}
+
 /* TimeSlots Section */
 .time-section {
   background-color: #ffffff;
@@ -372,9 +410,9 @@ body {
 }
 
 .time-slots {
-  display: flex;
-  flex-direction: column;
-  gap: 0px;
+  display: grid;  /* Changed from flex to grid for better control */
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* Ensure they distribute evenly */
+  gap: 8px;  /* Adds space between time slots */
 }
 
 .time-slot {
@@ -390,6 +428,10 @@ body {
   transition: background-color 0.2s !important, color 0.2s !important, border-color 0.2s !important;
   /* Apply Inter Text */
   font-family: "Inter", sans-serif;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  height: 40px; /* Fix the height of each time slot for consistency */
 }
 
 .time-slot:hover {
@@ -401,3 +443,4 @@ body {
   color: #ffffff !important;
   border-color: #111827 !important;
 }
+
