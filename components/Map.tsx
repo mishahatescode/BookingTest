@@ -3,7 +3,7 @@
 import React, { useEffect } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { MapPin } from 'lucide-react'; // Import the MapPin icon
+import { MapPinIcon } from './Icons'; // Import the MapPinIcon from Icons
 
 interface MapProps {
   selectedLocation: { lat: number | null; lng: number | null };
@@ -20,12 +20,11 @@ const Map: React.FC<MapProps> = ({ selectedLocation, setSelectedLocation }) => {
         attribution: '&copy; OpenStreetMap contributors',
       }).addTo(map);
 
-      // Safely access MapPin only if it exists
-      const mapPinElement = MapPin ? MapPin({ size: 24, color: 'red' }).props.children : '';
+      // Create the custom icon by rendering MapPinIcon as HTML
+      const mapPinIconHtml = `<div style="width: 24px; height: 24px;">${MapPinIcon({ color: 'red', size: 24 }).props.children}</div>`;
 
-      // Create a custom Leaflet icon using the MapPin icon
       const customIcon = L.divIcon({
-        html: `<div style="width: 24px; height: 24px; color: red;">${mapPinElement}</div>`,
+        html: mapPinIconHtml,
         className: '' // Empty className to remove default styles
       });
 
@@ -76,7 +75,7 @@ const Map: React.FC<MapProps> = ({ selectedLocation, setSelectedLocation }) => {
     }
   }, [setSelectedLocation]);
 
-  return <div id="map" className="map-container"></div>;
+  return <div id="map" className="map-container" style={{ height: '100%' }}></div>;
 };
 
 export default Map;
