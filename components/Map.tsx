@@ -20,9 +20,12 @@ const Map: React.FC<MapProps> = ({ selectedLocation, setSelectedLocation }) => {
         attribution: '&copy; OpenStreetMap contributors',
       }).addTo(map);
 
+      // Safely access MapPin only if it exists
+      const mapPinElement = MapPin ? MapPin({ size: 24, color: 'red' }).props.children : '';
+
       // Create a custom Leaflet icon using the MapPin icon
       const customIcon = L.divIcon({
-        html: `<div style="width: 24px; height: 24px; color: red;">${MapPin({ size: 24, color: 'red' }).props.children}</div>`,
+        html: `<div style="width: 24px; height: 24px; color: red;">${mapPinElement}</div>`,
         className: '' // Empty className to remove default styles
       });
 
