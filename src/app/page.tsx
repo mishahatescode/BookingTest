@@ -11,9 +11,9 @@ import { Clock, MapPin } from 'lucide-react';
 const MapWithNoSSR = dynamic(() => import('../../components/Map'), { ssr: false });
 
 const Home: React.FC = () => {
-  const [selectedDate, setSelectedDate] = useState<{ startTime: string, endTime: string } | null>(null); 
+  const [selectedDate, setSelectedDate] = useState<{ startTime: string, endTime: string } | null>(null);
   const [selectedTime, setSelectedTime] = useState<string>(''); 
-  const [computedStartTime, setComputedStartTime] = useState<string>('');  // Final computed startTime after combining date and time
+  const [computedStartTime, setComputedStartTime] = useState<string>('');  
   const [showTimeSlots, setShowTimeSlots] = useState(false); 
   const [selectedLocation, setSelectedLocation] = useState<{ lat: number | null; lng: number | null }>({ lat: null, lng: null });
   const [formData, setFormData] = useState<{ name: string; email: string; notes: string; phone: string }>({
@@ -23,16 +23,38 @@ const Home: React.FC = () => {
     phone: ''
   });
 
-  // Combine the selected date and time directly, without unwanted timezone shifts
+  // Updated combineDateAndTime function
   const combineDateAndTime = (dateString: string, timeString: string) => {
-    const [hours, minutes] = timeString.split(':').map(Number);
+    // Convert 12-hour format (e.g., "04:00 PM") to 24-hour format
+    const timeParts = timeString.match(/(\d+):(\d+)\s*(AM|PM)/);
+    
+    if (!timeParts) {
+      console.error("Invalid time value:", timeString);
+      return ''; // Return early if time is invalid
+    }
 
-    // Parse date and set the correct time
+    let hours = parseInt(timeParts[1], 10);
+    const minutes = parseInt(timeParts[2], 10);
+    const ampm = timeParts[3];
+
+    // Convert to 24-hour format
+    if (ampm === 'PM' && hours < 12) {
+      hours += 12;
+    }
+    if (ampm === 'AM' && hours === 12) {
+      hours = 0; // Midnight case
+    }
+
+    // Parse the date string and set the hours/minutes
     const date = new Date(dateString);
     date.setHours(hours, minutes, 0, 0);
 
-    // Return local time without UTC 'Z' suffix
-    return date.toLocaleDateString('sv-SE') + 'T' + timeString + ':00';
+    if (isNaN(date.getTime())) {
+      console.error("Invalid time value:", timeString);
+      return '';  // Return early to avoid further issues
+    }
+
+    return date.toISOString();  // Convert to valid ISO format
   };
 
   // Recompute startTime when selectedTime or selectedDate changes
@@ -46,12 +68,11 @@ const Home: React.FC = () => {
 
   // Log selected date
   const handleDateSelect = (startTime: string, endTime: string) => {
-    const date = new Date(startTime).toISOString().split('T')[0];
-    console.log("Date Selected: Start Time:", date, "End Time:", endTime); // Log date selection
+    console.log("Date Selected:", { startTime, endTime }); // Log date selection
 
     setSelectedDate({
-      startTime: new Date(startTime).toISOString(),
-      endTime: new Date(endTime).toISOString(),
+      startTime: new Date(startTime).toISOString(), 
+      endTime: new Date(endTime).toISOString()
     });
   };
 
@@ -69,38 +90,33 @@ const Home: React.FC = () => {
       return;
     }
 
-    // Create the endTime (assuming 1-hour slots)
-    const endTime = new Date(computedStartTime);
-    endTime.setHours(endTime.getHours() + 1); // Add 1 hour
-    const endTimeISO = endTime.toISOString();
-
-    console.log("Computed endTime:", endTimeISO);
-
-    // Prepare the booking data
-    const bookingData = {
-      startTime: computedStartTime,  // Use the computed startTime
-      endTime: endTimeISO,
-      name: 'Custom Booking Form Used', // Hardcoded name
-      email: 'admin@admin.com', // Hardcoded email
-      phone: formData.phone,
-      location: `Lat: ${selectedLocation.lat}, Lng: ${selectedLocation.lng}`,
-      notes: formData.notes || ''
-    };
-
-    console.log("Booking Data being sent:", bookingData);
-
-    // Send booking data to the backend
     try {
+      const endTime = new Date(computedStartTime);
+      endTime.setHours(endTime.getHours() + 1);
+      const endTimeISO = endTime.toISOString();
+
+      const bookingData = {
+        startTime: computedStartTime,
+        endTime: endTimeISO,
+        name: 'Custom Booking Form Used',
+        email: 'admin@admin.com',
+        phone: formData.phone,
+        location: `Lat: ${selectedLocation.lat}, Lng: ${selectedLocation.lng}`,
+        notes: formData.notes || ''
+      };
+
+      console.log("Booking Data being sent:", bookingData);
+
       const response = await axios.post('/api/booking-proxy', bookingData, {
         headers: { 'Content-Type': 'application/json' },
       });
 
-      const data = response.data as { message: string; error?: string }; // Cast response to ApiResponse
+      const data = response.data as { message: string; error?: string };
 
       if (response.status === 200) {
         alert(data.message);
-        setSelectedDate(null); // Reset date
-        setSelectedTime('');    // Reset time
+        setSelectedDate(null);
+        setSelectedTime('');
         setSelectedLocation({ lat: null, lng: null });
         setFormData({ name: '', email: '', notes: '', phone: '' });
       } else {
@@ -108,7 +124,7 @@ const Home: React.FC = () => {
       }
     } catch (error: any) {
       console.error('Error:', error.message);
-      alert('An error occurred.');
+      alert('An error occurred while submitting the booking.');
     }
   };
 
@@ -134,7 +150,7 @@ const Home: React.FC = () => {
             <Calendar
               setSelectedDate={handleDateSelect}
               setShowTimeSlots={setShowTimeSlots}
-              timezone="Asia/Makassar" // Adding the timezone prop to Calendar
+              timezone="Asia/Makassar"
             />
           ) : (
             <>

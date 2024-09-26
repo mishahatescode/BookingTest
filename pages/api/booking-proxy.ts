@@ -1,5 +1,3 @@
-import puppeteer from 'puppeteer-core';
-import chromium from 'chrome-aws-lambda';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import axios from 'axios';
 
@@ -7,46 +5,41 @@ const CALCOM_API_KEY = process.env.CALCOM_API_KEY || '';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'GET') {
-    let browser;
     try {
-      const currentDate = new Date().toISOString().split('T')[0];  
-      console.log('Scraping times for date:', currentDate);
+      const { startTime, endTime } = req.query;
 
-      const url = `https://cal.com/gowashbali/pickup-wash?date=${currentDate}&month=${currentDate.slice(0, 7)}`;
-      console.log('Navigating to URL:', url);
+      // Log the incoming request parameters
+      console.log('Fetching available times from Cal.com API for the event type ID: 1044017');
+      console.log('Request Params:', { startTime, endTime });
 
-      // Launch Puppeteer with serverless setup
-      browser = await puppeteer.launch({
-        args: chromium.args,
-        executablePath: await chromium.executablePath,
-        headless: true,
+      // Fetch available time slots from the Cal.com API
+      const response = await axios.get('https://api.cal.com/v2/slots/available', {
+        params: {
+          eventTypeId: 1044017,  // The event type ID for which to fetch slots
+          startTime,  // Use user-selected start time in UTC
+          endTime,    // Use user-selected end time in UTC
+        },
+        headers: {
+          Authorization: `Bearer ${CALCOM_API_KEY}`,
+          'Content-Type': 'application/json',
+          'cal-api-version': '2024-08-13',  // Ensure versioning is added in the headers
+        }
       });
 
-      const page = await browser.newPage();
-      await page.goto(url, { waitUntil: 'networkidle2' });
+      // Log the response for debugging
+      console.log('Available times:', JSON.stringify(response.data, null, 2));
 
-      // Extract available time slots
-      const availableSlots = await page.$$eval('button[data-testid="time"]', (slots) =>
-        slots.map(slot => slot.textContent?.trim())
-      );
-
-      console.log('Available time slots:', availableSlots);
-      await browser.close();
-
+      // Return available slots as the response
       return res.status(200).json({
         status: 'success',
-        availableTimes: availableSlots,
+        availableTimes: response.data.data.slots,  // Ensure we're returning the correct part of the response
       });
     } catch (error: unknown) {
-      // Ensure browser is closed in case of error
-      if (browser) await browser.close();
-      
-      const typedError = error as Error;
-      console.error('Error scraping available times:', typedError.message);
-
+      const typedError = error as any;
+      console.error('Error fetching available times:', typedError.message);
       return res.status(500).json({
         status: 'error',
-        message: 'Error scraping available times',
+        message: 'Error fetching available times',
       });
     }
   } else if (req.method === 'POST') {
@@ -58,10 +51,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       console.log('Incoming POST data:', { startTime, name, email, phone, timeZone, location, notes });
 
-      if (!startTime || !phone || !location) {
-        return res.status(400).json({ status: 'error', message: 'All required fields must be provided' });
-      }
-
+      // Create the booking payload for Cal.com API
       const bookingPayload = {
         start: startTime,
         eventTypeId: 1044017,
@@ -80,8 +70,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
       };
 
+      // Log the payload before sending
       console.log("Sending Booking Payload to Cal.com V2 API:", JSON.stringify(bookingPayload, null, 2));
 
+      // Make the POST request to create the booking
       const calcomResponse = await axios.post(
         'https://api.cal.com/v2/bookings',
         bookingPayload,
@@ -89,12 +81,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           headers: {
             'Authorization': `Bearer ${CALCOM_API_KEY}`,
             'Content-Type': 'application/json',
-            'cal-api-version': '2024-08-13'
+            'cal-api-version': '2024-08-13',
           }
         }
       );
 
-      console.log('Cal.com API response:', calcomResponse.data);
+      // Log and return the response from Cal.com
+      console.log('Cal.com API response:', JSON.stringify(calcomResponse.data, null, 2));
 
       return res.status(200).json({
         status: 'success',
@@ -102,14 +95,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         booking: calcomResponse.data
       });
     } catch (error: unknown) {
-      const typedError = error as Error;
+      const typedError = error as any;
       console.error('Error creating booking:', typedError.message);
-      console.error('Error details:', (typedError as any).response ? (typedError as any).response.data : 'No additional details');
-
+      console.error('Error details:', typedError.response ? typedError.response.data : 'No additional details');
       return res.status(500).json({
         status: 'error',
         message: 'Error creating booking',
-        error: (typedError as any).response?.data || typedError.message
+        error: typedError.response?.data || typedError.message
       });
     }
   } else {

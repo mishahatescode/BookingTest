@@ -39,13 +39,14 @@ const Calendar: React.FC<CalendarProps> = ({ setSelectedDate, setShowTimeSlots, 
     const date = new Date(currentYear, currentMonth, day);
     if (isBefore(date, today)) return; // Prevent past days from being clicked
 
-    const startTime = date.toLocaleDateString('sv-SE') + 'T00:00:00';
-    const endTime = date.toLocaleDateString('sv-SE') + 'T23:59:59';
+    // Convert the selected date to UTC
+    const startTime = new Date(Date.UTC(currentYear, currentMonth, day, 0, 0, 0)).toISOString();
+    const endTime = new Date(Date.UTC(currentYear, currentMonth, day, 23, 59, 59)).toISOString();
 
     // Log when the user clicks a date
-    console.log("Date selected by user:", date.toDateString());
+    console.log("Date selected by user:", date.toDateString(), { startTime, endTime });
 
-    setSelectedDate(startTime, endTime); // Directly pass both times to the parent
+    setSelectedDate(startTime, endTime); // Pass both times to the parent in UTC
     setShowTimeSlots(true);  // Show time slots
   };
 

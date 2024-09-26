@@ -14,7 +14,7 @@ const Map: React.FC<MapProps> = ({ selectedLocation, setSelectedLocation }) => {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       // Initialize the map
-      const map = L.map('map').setView([51.505, -0.09], 13);
+      const map = L.map('map').setView([-8.8162, 115.1658], 13); // Ungasan coordinates
 
       // Add OpenStreetMap tiles
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -22,8 +22,8 @@ const Map: React.FC<MapProps> = ({ selectedLocation, setSelectedLocation }) => {
       }).addTo(map);
 
       // Geofence coordinates
-      const geofenceCenter: [number, number] = [51.505, -0.09];
-      const geofenceRadius = 5000; // in meters
+      const geofenceCenter: [number, number] = [-8.8162, 115.1658]; // Ungasan center
+      const geofenceRadius = 7000; // 7km radius
 
       // Add a circle to represent the geofence
       const geofenceCircle = L.circle(geofenceCenter, {

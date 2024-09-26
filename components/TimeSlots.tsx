@@ -1,12 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { LoaderIcon } from './Icons';  // Import the LoaderIcon
+import { LoaderIcon } from './Icons'; // Import the LoaderIcon
 import _ from 'lodash';
-
-// Define an interface for the expected response data structure
-interface AvailableTimesResponse {
-  availableTimes: string[];
-}
 
 interface TimeSlotsProps {
   selectedDate: { startTime: string; endTime: string } | null;
@@ -27,33 +22,34 @@ const TimeSlots: React.FC<TimeSlotsProps> = ({ selectedDate, selectedTime, setSe
       setLoading(true);
       setError(null);
 
-      const debouncedFetch = _.debounce(() => {
-        axios
-          .get('/api/booking-proxy', {
-            params: {
-              startTime,
-              endTime,
-            },
-          })
-          .then((response) => {
-            const data = response.data as AvailableTimesResponse; // Cast the response to the expected type
-            setAvailableTimes(data.availableTimes);
-            setLoading(false);
-            console.log('Available times:', data.availableTimes);
-          })
-          .catch((err) => {
-            setError('Failed to load available time slots');
-            setLoading(false);
-          });
-      }, 300);
+      axios
+        .get('/api/booking-proxy', {
+          params: { startTime, endTime },
+        })
+        .then((response) => {
+          const dateKey = startTime.split('T')[0]; // Extract the date part of the startTime
+          const slots = response.data.availableTimes[dateKey]; // Dynamically use the selected date
 
-      debouncedFetch();
-      return () => debouncedFetch.cancel();
+          if (slots) {
+            const formattedTimes = slots.map((slot: any) => {
+              const date = new Date(slot.time);
+              return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            });
+            setAvailableTimes(formattedTimes);
+          } else {
+            setAvailableTimes([]);
+          }
+          setLoading(false);
+        })
+        .catch((err) => {
+          setError('Failed to load available time slots');
+          setLoading(false);
+        });
     }
   }, [selectedDate]);
 
   const handleTimeClick = (time: string) => {
-    setSelectedTime(time); // Only set the selected time, do not trigger any POST requests
+    setSelectedTime(time); // Only set the selected time
     console.log("Time selected:", time); // Log selected time
   };
 
