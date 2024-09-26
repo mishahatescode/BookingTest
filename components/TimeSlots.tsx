@@ -3,6 +3,11 @@ import axios from 'axios';
 import { LoaderIcon } from './Icons';  // Import the LoaderIcon
 import _ from 'lodash';
 
+// Define an interface for the expected response data structure
+interface AvailableTimesResponse {
+  availableTimes: string[];
+}
+
 interface TimeSlotsProps {
   selectedDate: { startTime: string; endTime: string } | null;
   selectedTime: string;
@@ -31,9 +36,10 @@ const TimeSlots: React.FC<TimeSlotsProps> = ({ selectedDate, selectedTime, setSe
             },
           })
           .then((response) => {
-            setAvailableTimes(response.data.availableTimes);
+            const data = response.data as AvailableTimesResponse; // Cast the response to the expected type
+            setAvailableTimes(data.availableTimes);
             setLoading(false);
-            console.log('Available times:', response.data.availableTimes);
+            console.log('Available times:', data.availableTimes);
           })
           .catch((err) => {
             setError('Failed to load available time slots');
@@ -47,10 +53,8 @@ const TimeSlots: React.FC<TimeSlotsProps> = ({ selectedDate, selectedTime, setSe
   }, [selectedDate]);
 
   const handleTimeClick = (time: string) => {
-    setSelectedTime(time);
-
-    // Log when the user clicks a time slot
-    console.log("Time selected by user:", time);
+    setSelectedTime(time); // Only set the selected time, do not trigger any POST requests
+    console.log("Time selected:", time); // Log selected time
   };
 
   if (loading) {
