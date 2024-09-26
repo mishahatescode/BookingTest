@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { MapPinIconSVG } from './Icons'; // Import the SVG string
+import { MapPinIconSVG } from './Icons'; // Now this should work fine
 
 interface MapProps {
   selectedLocation: { lat: number | null; lng: number | null };
