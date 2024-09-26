@@ -4,6 +4,7 @@
 import React, { useEffect } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css'; // Import Leaflet CSS
+import { LocationIcon } from './Icons'; // Assuming you moved MapPin to Icons.tsx
 
 interface MapProps {
   selectedLocation: { lat: number | null; lng: number | null };
@@ -13,7 +14,7 @@ interface MapProps {
 const Map: React.FC<MapProps> = ({ selectedLocation, setSelectedLocation }) => {
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      // Initialize the map at Ungasan, Bali with a zoom level
+      // Initialize the map at Ungasan, Bali
       const map = L.map('map').setView([-8.8141, 115.1628], 13);
 
       // Add OpenStreetMap tiles
@@ -22,7 +23,7 @@ const Map: React.FC<MapProps> = ({ selectedLocation, setSelectedLocation }) => {
       }).addTo(map);
 
       // Geofence coordinates
-      const geofenceCenter: [number, number] = [-8.8141, 115.1628]; // Ungasan, Bali center
+      const geofenceCenter: [number, number] = [-8.8141, 115.1628]; // Ungasan, Bali
       const geofenceRadius = 7000; // 7 km radius
 
       // Add a circle to represent the geofence
@@ -33,20 +34,12 @@ const Map: React.FC<MapProps> = ({ selectedLocation, setSelectedLocation }) => {
         radius: geofenceRadius,
       }).addTo(map);
 
-      // SVG icon for the MapPin (can be customized further if needed)
-      const mapPinSVG = `
-        <svg xmlns="http://www.w3.org/2000/svg" fill="red" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-          <path d="M12 2a10 10 0 0110 10c0 5.25-4.5 9.75-10 14.75C6.5 21.75 2 17.25 2 12A10 10 0 0112 2z" />
-          <circle cx="12" cy="12" r="3" />
-        </svg>
-      `;
-
-      // Create a custom Leaflet icon using the MapPin SVG
+      // Render MapPin as custom icon
       const customIcon = L.divIcon({
-        html: mapPinSVG,
-        iconSize: [24, 24], // Adjust size of the icon
-        iconAnchor: [12, 24], // Anchor it at the bottom center (so it points correctly)
-        className: 'custom-map-pin', // Remove default styling
+        html: `<div style="width: 40px; height: 40px;">${LocationIcon()}</div>`, // Use the custom MapPin
+        iconSize: [40, 40], // Increase the size of the icon
+        iconAnchor: [20, 40], // Anchor it at the bottom center
+        className: '', // Empty className to avoid Leaflet default styles
       });
 
       // Marker for the selected location
@@ -84,7 +77,7 @@ const Map: React.FC<MapProps> = ({ selectedLocation, setSelectedLocation }) => {
     }
   }, [setSelectedLocation]);
 
-  return <div id="map" className="map-container" style={{ height: '400px', width: '100%' }}></div>; // Added height and width
+  return <div id="map" className="map-container"></div>;
 };
 
 export default Map;
