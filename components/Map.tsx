@@ -1,9 +1,9 @@
+// Map.tsx
 'use client';
 
 import React, { useEffect } from 'react';
 import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
-import { MapPinIcon } from './Icons'; // Import the MapPinIcon from Icons
+import 'leaflet/dist/leaflet.css'; // Import Leaflet CSS
 
 interface MapProps {
   selectedLocation: { lat: number | null; lng: number | null };
@@ -13,23 +13,16 @@ interface MapProps {
 const Map: React.FC<MapProps> = ({ selectedLocation, setSelectedLocation }) => {
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const map = L.map('map').setView([-8.8185, 115.1763], 13);  // Set to Ungasan, Bali
+      // Initialize the map at Ungasan, Bali with a zoom level
+      const map = L.map('map').setView([-8.8141, 115.1628], 13); 
 
       // Add OpenStreetMap tiles
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; OpenStreetMap contributors',
       }).addTo(map);
 
-      // Create the custom icon by rendering MapPinIcon as HTML
-      const mapPinIconHtml = `<div style="width: 24px; height: 24px;">${MapPinIcon({ color: 'red', size: 24 }).props.children}</div>`;
-
-      const customIcon = L.divIcon({
-        html: mapPinIconHtml,
-        className: '' // Empty className to remove default styles
-      });
-
       // Geofence coordinates
-      const geofenceCenter: [number, number] = [-8.8185, 115.1763];
+      const geofenceCenter: [number, number] = [-8.8141, 115.1628]; // Ungasan, Bali center
       const geofenceRadius = 7000; // 7 km radius
 
       // Add a circle to represent the geofence
@@ -39,6 +32,20 @@ const Map: React.FC<MapProps> = ({ selectedLocation, setSelectedLocation }) => {
         fillOpacity: 0.1,
         radius: geofenceRadius,
       }).addTo(map);
+
+      // SVG icon for the MapPin
+      const mapPinSVG = `
+        <svg xmlns="http://www.w3.org/2000/svg" fill="red" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" width="24" height="24">
+          <path d="M12 2a10 10 0 0110 10c0 5.25-4.5 9.75-10 14.75C6.5 21.75 2 17.25 2 12A10 10 0 0112 2z" />
+          <circle cx="12" cy="12" r="3" />
+        </svg>
+      `;
+
+      // Create a custom Leaflet icon using the MapPin SVG
+      const customIcon = L.divIcon({
+        html: mapPinSVG,
+        className: '' // Empty className to remove default styles
+      });
 
       // Marker for the selected location
       let marker: L.Marker | null = null;
@@ -54,7 +61,7 @@ const Map: React.FC<MapProps> = ({ selectedLocation, setSelectedLocation }) => {
           return;
         }
 
-        // If marker exists, move it; else, create a new one with the custom icon
+        // If marker exists, move it; else, create a new one
         if (marker) {
           marker.setLatLng(e.latlng);
         } else {
@@ -75,7 +82,7 @@ const Map: React.FC<MapProps> = ({ selectedLocation, setSelectedLocation }) => {
     }
   }, [setSelectedLocation]);
 
-  return <div id="map" className="map-container" style={{ height: '100%' }}></div>;
+  return <div id="map" className="map-container" style={{ height: '400px', width: '100%' }}></div>; // Added height and width
 };
 
 export default Map;
