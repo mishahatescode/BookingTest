@@ -1,4 +1,5 @@
-import puppeteer from 'puppeteer';
+import puppeteer from 'puppeteer-core';
+import chromium from 'chrome-aws-lambda';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import axios from 'axios';
 
@@ -6,6 +7,7 @@ const CALCOM_API_KEY = process.env.CALCOM_API_KEY || '';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'GET') {
+    let browser;
     try {
       const currentDate = new Date().toISOString().split('T')[0];  
       console.log('Scraping times for date:', currentDate);
@@ -13,10 +15,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const url = `https://cal.com/gowashbali/pickup-wash?date=${currentDate}&month=${currentDate.slice(0, 7)}`;
       console.log('Navigating to URL:', url);
 
-      const browser = await puppeteer.launch({ headless: true });
+      // Launch Puppeteer with serverless setup
+      browser = await puppeteer.launch({
+        args: chromium.args,
+        executablePath: await chromium.executablePath,
+        headless: true,
+      });
+
       const page = await browser.newPage();
       await page.goto(url, { waitUntil: 'networkidle2' });
 
+      // Extract available time slots
       const availableSlots = await page.$$eval('button[data-testid="time"]', (slots) =>
         slots.map(slot => slot.textContent?.trim())
       );
@@ -29,7 +38,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         availableTimes: availableSlots,
       });
     } catch (error: unknown) {
-      // Cast error to Error type to safely access its message
+      // Ensure browser is closed in case of error
+      if (browser) await browser.close();
+      
       const typedError = error as Error;
       console.error('Error scraping available times:', typedError.message);
 
@@ -91,7 +102,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         booking: calcomResponse.data
       });
     } catch (error: unknown) {
-      // Again, cast error to Error to safely access its message
       const typedError = error as Error;
       console.error('Error creating booking:', typedError.message);
       console.error('Error details:', (typedError as any).response ? (typedError as any).response.data : 'No additional details');
