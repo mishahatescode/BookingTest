@@ -1,8 +1,8 @@
 import React from 'react';
 export const MapPinIconSVG = `
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-map-pin" width="24" height="24">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="red" stroke="red" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-map-pin" width="24" height="24">
     <path d="M21 10c0 4.8-9 13-9 13S3 14.8 3 10a9 9 0 1 1 18 0z"/>
-    <circle cx="12" cy="10" r="3"/>
+    <circle cx="12" cy="10" r="3" fill="red"/>
   </svg>
 `;
 
