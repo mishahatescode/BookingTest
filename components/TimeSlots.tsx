@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { LoaderIcon } from './icons';  // Import the LoaderIcon
+import { LoaderIcon } from './Icons';  // Import the LoaderIcon
 import _ from 'lodash';
 
 interface TimeSlotsProps {
@@ -52,7 +52,7 @@ const TimeSlots: React.FC<TimeSlotsProps> = ({ selectedDate, selectedTime, setSe
     // Log when the user clicks a time slot
     console.log("Time selected by user:", time);
   };
-  
+
   if (loading) {
     return (
       <div className="time-section">
