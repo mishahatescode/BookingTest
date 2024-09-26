@@ -1,6 +1,15 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import axios from 'axios';
 
+// Define a type for the API response to improve type safety
+interface AvailableTimesResponse {
+  data: {
+    slots: {
+      [dateKey: string]: { time: string }[];  // Each date key contains an array of time slots
+    };
+  };
+}
+
 const CALCOM_API_KEY = process.env.CALCOM_API_KEY || '';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -8,12 +17,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       const { startTime, endTime } = req.query;
 
-      // Log the incoming request parameters
+      // Log the incoming request parameters for debugging
       console.log('Fetching available times from Cal.com API for the event type ID: 1044017');
       console.log('Request Params:', { startTime, endTime });
 
       // Fetch available time slots from the Cal.com API
-      const response = await axios.get('https://api.cal.com/v2/slots/available', {
+      const response = await axios.get<AvailableTimesResponse>('https://api.cal.com/v2/slots/available', {
         params: {
           eventTypeId: 1044017,  // The event type ID for which to fetch slots
           startTime,  // Use user-selected start time in UTC
@@ -37,6 +46,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     } catch (error: unknown) {
       const typedError = error as any;
       console.error('Error fetching available times:', typedError.message);
+
+      // Check for a response and provide detailed error information if available
+      if (typedError.response) {
+        console.error('Error response details:', typedError.response.data);
+        return res.status(500).json({
+          status: 'error',
+          message: 'Error fetching available times',
+          error: typedError.response.data,
+        });
+      }
+
       return res.status(500).json({
         status: 'error',
         message: 'Error fetching available times',
@@ -62,7 +82,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           language: "en",
         },
         guests: [],
-        meetingUrl: "https://example.com/meeting",
+        meetingUrl: "https://example.com/meeting",  // Example meeting URL (optional)
         bookingFieldsResponses: {
           phone,
           location,
@@ -97,11 +117,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     } catch (error: unknown) {
       const typedError = error as any;
       console.error('Error creating booking:', typedError.message);
-      console.error('Error details:', typedError.response ? typedError.response.data : 'No additional details');
+
+      // Check for a response and provide detailed error information if available
+      if (typedError.response) {
+        console.error('Error details:', typedError.response.data);
+        return res.status(500).json({
+          status: 'error',
+          message: 'Error creating booking',
+          error: typedError.response.data,
+        });
+      }
+
       return res.status(500).json({
         status: 'error',
         message: 'Error creating booking',
-        error: typedError.response?.data || typedError.message
       });
     }
   } else {
