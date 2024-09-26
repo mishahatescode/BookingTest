@@ -10,11 +10,6 @@ import { Clock, MapPin } from 'lucide-react';
 // Dynamically import the Map component with SSR disabled
 const MapWithNoSSR = dynamic(() => import('../../components/Map'), { ssr: false });
 
-interface ApiResponse {
-  message: string;
-  error?: string;
-}
-
 const Home: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<{ startTime: string, endTime: string } | null>(null); 
   const [selectedTime, setSelectedTime] = useState<string>(''); 
@@ -100,7 +95,7 @@ const Home: React.FC = () => {
         headers: { 'Content-Type': 'application/json' },
       });
 
-      const data = response.data as ApiResponse; // Cast response to ApiResponse
+      const data = response.data as { message: string; error?: string }; // Cast response to ApiResponse
 
       if (response.status === 200) {
         alert(data.message);
@@ -139,6 +134,7 @@ const Home: React.FC = () => {
             <Calendar
               setSelectedDate={handleDateSelect}
               setShowTimeSlots={setShowTimeSlots}
+              timezone="Asia/Makassar" // Adding the timezone prop to Calendar
             />
           ) : (
             <>
