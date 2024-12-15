@@ -3,6 +3,16 @@ import axios from 'axios';
 import { LoaderIcon } from './Icons'; // Import the LoaderIcon
 import _ from 'lodash';
 
+interface Slot {
+  time: string;
+}
+
+interface AvailableTimesResponse {
+  availableTimes: {
+    [dateKey: string]: Slot[];
+  };
+}
+
 interface TimeSlotsProps {
   selectedDate: { startTime: string; endTime: string } | null;
   selectedTime: string;
@@ -23,15 +33,15 @@ const TimeSlots: React.FC<TimeSlotsProps> = ({ selectedDate, selectedTime, setSe
       setError(null);
 
       axios
-        .get('/api/booking-proxy', {
+        .get<AvailableTimesResponse>('/api/booking-proxy', {
           params: { startTime, endTime },
         })
         .then((response) => {
           const dateKey = startTime.split('T')[0]; // Extract the date part of the startTime
-          const slots = response.data.availableTimes[dateKey]; // Dynamically use the selected date
+          const slots = response.data.availableTimes[dateKey]; // Use the selected date dynamically
 
           if (slots) {
-            const formattedTimes = slots.map((slot: any) => {
+            const formattedTimes = slots.map((slot: Slot) => {
               const date = new Date(slot.time);
               return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
             });
